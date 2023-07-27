@@ -40,4 +40,4 @@ Tulis lisensi proyek Anda di sini. Misalnya: [MIT License](LICENSE).
 Tambahkan informasi kontak Anda di sini, seperti email atau cara untuk mencari tahu lebih lanjut tentang proyek Anda.
 
 ---
-Dipersiapkan oleh [Nama Anda](https://link-website-anda) - © Tahun
+Dipersiapkan oleh [Lamin H. Datau](https://Laminhdatau.github.io) - © Tahun 2023
