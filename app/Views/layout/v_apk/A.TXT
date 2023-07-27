@@ -1,0 +1,83 @@
+ <?php
+
+            // Model
+            $m_menu = new \App\Models\M_menu();
+            $m_group = new \App\Models\M_groups();
+            $m_userpegawai = new \App\Models\M_userpegawai();
+            $m_sub = new \App\Models\M_submenu();
+            $m_akses = new \App\Models\M_akses_menu();
+            $m_jenissurat = new \App\Models\M_jenis_surat();
+            $v_pegawai = new \App\Models\V_pegawai();
+            $m_wilayah = new \App\Models\M_wilayah();
+            $m_instansi = new \App\Models\M_instansi();
+            $M_surat = new \App\Models\M_surat();
+            $m_user = new \App\Models\UserModel();
+
+            $pegawaiId = getLoggedInPegawaiId();
+            $instansiId = getLoggedInInstansi();
+            $userId = getLoggedInUserId();
+            // Mendapatkan menu dan data lainnya
+            $menu = $m_menu->findAll();
+            $group = $m_group->findAll();
+            $userpegawai = $m_userpegawai->findAll();
+            $sub = $m_sub->findAll();
+            $aksesmenus = $m_akses->findAll();
+            $jenis_surat = $m_jenissurat->findAll();
+
+            $datapegawai = $v_pegawai->where('id_pegawai', $pegawaiId)->first();
+            $userPegawai = $m_userpegawai->where('id_user', $userId)->first();
+
+            $nl = null;
+            $pf = null;
+
+            // Memeriksa apakah data pegawai_pts tersedia
+            if ($datapegawai) {
+                $nl = $datapegawai['nama_lengkap'];
+                $pf = $datapegawai['foto'];
+            }
+
+            // Looping menu
+            foreach ($menu as $m) {
+                $submenus = $m_sub->where('id_menu', $m['id_menu'])->findAll();
+                $allowedAccess = false;
+
+                // Cek akses menu berdasarkan t_user_pegawai
+                foreach ($submenus as $sm) {
+
+                    $idAuthGroupUserPegawai = $userPegawai['id_auth_group'];
+                    $aksesmenu = $m_akses->where('id_auth_group', $idAuthGroupUserPegawai)
+                        ->where('id_menu', $m['id_menu'])
+                        ->first();
+
+                    if ($aksesmenu) {
+                        $allowedAccess = true;
+                        break;
+                    }
+                }
+
+                if ($allowedAccess) {
+                    if ($title == $m['menu']) {
+                        echo '<li class="nav-item active">';
+                    } else {
+                        echo '<li class="nav-item">';
+                    }
+
+                    echo '<a class="nav-link" href="' . base_url($sm['url']) . '">';
+                    echo '<i class="fas fa-fw fa-' . $sm['icon'] . '"></i>';
+                    echo '<span>' . $m['menu'] . '</span>';
+
+                    $allowedMenus = [1, 2, 3, 14, 15, 16];
+
+
+
+                    if (in_array($m['id_menu'], $allowedMenus)) {
+                        echo '<span class="badge float-right badge-danger" id="countNotiflldiktiMasuk"></span>';
+                    }
+
+                    echo '</a>';
+                    echo '</li>';
+                }
+            }
+
+
+            ?>
