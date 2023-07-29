@@ -2,28 +2,26 @@
 
 <?= $this->section('content'); ?>
 
-        <!-- Content Wrapper -->
-        <div id="content-wrapper">
-            <div id="content">
-                <!-- Begin Page Content -->
-                <div class="card col-6 p-3 mx-auto mt-5">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3 bg-primary text-center">
-                            <h2 class="m-0 font-weight-bold text-white">profile</h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="text-center text-black text-bold">
-
-                               <?= dd($users); ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- /.container-fluid -->
-            </div>
-            <!-- End of Content -->
+<div class="container float-left">
+    
+    <div class="card" style="width: 20rem; ">
+        <img class="card-img-top" src="<?= base_url('assets/img/'.$users->user_image); ?>" alt="image" style="width: 200px;">
+        <div class="card-body">
+            <h5 class="card-title">My Profile</h5>
+            <p class="card-text"><?= $users->nama_lengkap; ?></p>
         </div>
-        <!-- End of Content Wrapper -->
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><?= $users->username; ?></li>
+            <li class="list-group-item"><?= $users->ket_level; ?></li>
+            <li class="list-group-item">Vestibulum at eros</li>
+        </ul>
+        <div class="card-body">
+            <a href="#" class="card-link">Card link</a>
+            <a href="#" class="card-link">Another link</a>
+        </div>
+    </div>
+</div>
 
-     
+
+
 <?= $this->endSection(); ?>

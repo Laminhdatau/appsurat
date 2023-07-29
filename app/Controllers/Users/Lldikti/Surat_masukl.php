@@ -142,6 +142,7 @@ class Surat_masukl extends BaseController
     $pegawaiString = implode(",", $pegawai);
     $instrukString = implode(",", $instruksi);
     $disposisiModel = new M_disposisi();
+    $m_verif = new M_verifikasi();
 
 
     $data = [
@@ -154,6 +155,13 @@ class Surat_masukl extends BaseController
 
     $disposisiModel->createdisposisi($data);
 
+    $verif = [
+      'id_surat' => $id,
+      'id_user' => $userId,
+      'id_status' => '11'
+    ];
+    $m_verif->createVerifikasi($verif);
+
 
     if ($this->request->getPost('simpan')) {
       $pegawai = $this->request->getPost('daftarpegawai');
@@ -163,16 +171,23 @@ class Surat_masukl extends BaseController
 
       $data = [
         'id_surat_dispos' => $id,
+        'id_instruksi' => $instrukString,
         'id_pegawai_tujuan' => $pegawaiString,
         'user_id' => $userId,
-        'id_jenis_surat' => 3,
-        'id_instruksi' => $instrukString
+        'id_jenis_surat' => 3
       ];
 
       $disposisiModel->createdisposisi($data);
+
+      $verif = [
+        'id_surat' => $id,
+        'id_user' => $userId,
+        'id_status' => '11'
+      ];
+      $m_verif->createVerifikasi($verif);
     }
 
-    return redirect()->to('/surat_masukl')->with('success', "SUKSES");
+    return redirect()->to('/suratmasukl')->with('success', "SUKSES");
   }
 
 
@@ -279,13 +294,28 @@ GROUP BY
 
     $M_verif = new M_verifikasi();
     $userId = idUser();
-    $id_surat=$this->request->getPost('id_surat');
+    $id_surat = $this->request->getPost('id_surat');
     $data = [
       'id_surat' => $id_surat,
       'id_status' => '10',
       'id_user' => $userId
     ];
     $M_verif->createVerifikasi($data);
+    return $this->response->setStatusCode(200)->setBody('Konfirmasi berhasil');
+  }
+
+
+  public function konfirmasidis()
+  {
+
+    $M_verif = new M_verifikasi();
+    $userId = idUser();
+    $id_surat = $this->request->getPost('id_surat');
+    $data = [
+      'id_status' => '10',
+      'id_user' => $userId
+    ];
+    $M_verif->updateVerifikasi($id_surat, $data);
     return $this->response->setStatusCode(200)->setBody('Konfirmasi berhasil');
   }
 }

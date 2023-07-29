@@ -10,7 +10,7 @@ class M_surgas extends Model
 {
     protected $table = 't_surat_tugas';
     protected $primaryKey = 'id_surat_tugas';
-    protected $allowedFields = ['id_surat_tugas', 'id_jenis_surat', 'id_nomor_surat', 'tanggal_terbit', 'tgl_mulai', 'tgl_selesai', 'tujuan_surat', 'tempat_pelaksanaan','tembusan', 'qr_code_image_path', 'id_penandatangan','verifikator', 'id_status','id_uprov', 'is_active','lokasi','seeto','create_at','dasar'];
+    protected $allowedFields = ['id_surat_tugas', 'id_jenis_surat', 'id_nomor_surat', 'tanggal_terbit', 'tgl_mulai', 'tgl_selesai', 'tujuan_surat', 'tempat_pelaksanaan','tembusan', 'qr_code_image_path', 'id_penandatangan','verifikator', 'id_status','id_uprov', 'is_active','lokasi','seeto','create_at','created_by','dasar'];
 
     public function getSurgas($id = null)
     {

@@ -67,12 +67,16 @@
                                     <p><?= $s['tembusan']; ?></p>
                                 </td>
                                 <td class="col-5">
-                                    
+
                                     <p><?= $s['instruksi']; ?></p>
                                 </td>
 
                                 <td>
-                                   
+                                    <?php if ($s['id_status'] == '11') : ?>
+                                        <a type="button" class="badge btn-success btn-konfirmasi" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-check"></i> Konfirmasi</a>
+                                    <?php elseif ($s['id_status'] == '10') : ?>
+                                        <a type="button" class="badge btn-dark"><i class="fas fa-check"></i> Terkonfirmasi</a>
+                                    <?php endif; ?>
                                 </td>
 
                             </tr>
@@ -89,5 +93,34 @@
 </div>
 
 
+<script>
+    $(document).ready(function() {
+        // Fungsi untuk menangani klik tombol konfirmasi
+        $('.btn-konfirmasi').click(function() {
+            var idSurat = $(this).data('id');
+            var button = $(this);
+
+            // Kirim permintaan AJAX ke server
+            $.ajax({
+                url: '<?= base_url('konfirmasidis/') ?>',
+                type: 'post',
+                data: {
+                    id_surat: idSurat
+                },
+                success: function(response) {
+                    console.log(response);
+                    button.removeClass('badge btn-success').addClass('badge btn-dark');
+                    button.html('<i class="fas fa-check"></i> Terkonfirmasi');
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                    console.log('Terjadi kesalahan. Silakan coba lagi.');
+                }
+
+            });
+            location.reload();
+        });
+    });
+</script>
 
 <?= $this->endSection(); ?>

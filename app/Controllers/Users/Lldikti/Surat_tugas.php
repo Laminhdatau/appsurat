@@ -24,12 +24,10 @@ use Endroid\QrCode\Label\Label;
 use Endroid\QrCode\Logo\Logo;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Endroid\QrCode\Writer\PngWriter;
-
-
 use Dompdf\Dompdf;
-
-
 use App\Controllers\BaseController;
+use App\Models\M_surat;
+use App\Models\M_verifikasi;
 
 class Surat_tugas extends BaseController
 {
@@ -39,33 +37,42 @@ class Surat_tugas extends BaseController
     {
 
         $m_reff = new M_reff();
-        $m_status = new M_status();
+
         $m_surgas = new M_surgas();
         $m_pegawai = new M_pegawai();
         $kodeSurat = $m_reff->findAll();
+        $aktive = '';
+        if (idUser() == '16') {
+            $aktive = "WHERE st.is_active='1'";
+        }
+
         $querySurgas = $m_surgas->query("SELECT
         st.*,
         j.jenis_surat,
         n.nomor_surat,
         n.perihal,
-        GROUP_CONCAT(p.id_pegawai) AS ids_pegawai,
-        GROUP_CONCAT(p.nama_lengkap SEPARATOR '<br> ') AS nama_pegawai
+        GROUP_CONCAT(DISTINCT p.id_pegawai) AS ids_pegawai,
+        GROUP_CONCAT(DISTINCT p.nama_lengkap SEPARATOR '<br> ') AS nama_pegawai,
+        IF(COUNT(DISTINCT v.id_status) = 1, MAX(v.id_status), GROUP_CONCAT(DISTINCT v.id_status ORDER BY v.id_status)) AS id_status
     FROM
         t_surat_tugas st
         LEFT JOIN t_surat_tugas_pegawai tp ON tp.id_surat_tugas = st.id_surat_tugas
         LEFT JOIN db_pegawai.t_pegawai p ON FIND_IN_SET(p.id_pegawai, tp.id_pegawai_string) > 0
         JOIN t_jenis_surat j ON j.id_jenis_surat = st.id_jenis_surat
         LEFT JOIN t_reff_surat n ON n.nomor_surat = SUBSTRING_INDEX(SUBSTRING_INDEX(st.id_nomor_surat, '/', -2), '/', 1)
+        LEFT JOIN t_verifikasi v on v.id_surat=st.id_surat_tugas
+        LEFT JOIN t_status s on s.id_status=v.id_status
+        " . $aktive . "
     GROUP BY
-        st.id_surat_tugas,n.id_reff_surat
+        st.id_surat_tugas, n.id_reff_surat, v.id_surat
     ORDER BY
-            month(st.tanggal_terbit)=month(now());
+        month(st.tanggal_terbit) = month(now()), st.tanggal_terbit;
+    
     ");
 
-        $statusQuery = $m_status->query("SELECT * FROM `t_status` where id_status not in(0,4,5,6,7,8);");
+
 
         $surgas = $querySurgas->getResultArray();
-        $status = $statusQuery->getResultArray();
         $pegawai = $m_pegawai->where('id_pegawai !=', 0)->findAll();
 
 
@@ -73,11 +80,10 @@ class Surat_tugas extends BaseController
             'title' => "Surat Tugas",
             'kodeSurat' => $kodeSurat,
             'surgas' => $surgas,
-            'pegawai' => $pegawai,
-            'status' => $status
+            'pegawai' => $pegawai
         ];
 
-       
+
 
         return view('public/lldikti/surat_tugas', $data);
     }
@@ -115,16 +121,15 @@ class Surat_tugas extends BaseController
             'tembusan' => $this->request->getPost('tembusan'),
             'id_pejabat' => $this->request->getPost('id_pejabat'),
             'dasar' => $this->request->getPost('dasar'),
-            'id_status' => 4,
-            'id_uprov' => 4,
             'is_active' => 0,
+            'created_by' => idUser()
         ];
 
         $m_surgas->saveSurgas($data);
 
 
 
-        return redirect()->to('surat_tugas');
+        return redirect()->to('surattugas');
     }
 
     public function updateSurgas($id)
@@ -155,8 +160,6 @@ class Surat_tugas extends BaseController
             'tembusan' => $this->request->getPost('tembusan'),
             'id_pejabat' => $this->request->getPost('id_pejabat'),
             'dasar' => $this->request->getPost('dasar'),
-            'id_status' => 4,
-            'id_uprov' => 4,
             'is_active' => 0,
         ];
 
@@ -164,7 +167,7 @@ class Surat_tugas extends BaseController
 
 
 
-        return redirect()->to('surat_tugas');
+        return redirect()->to('surattugas');
     }
 
     public function BookingNumber()
@@ -188,13 +191,12 @@ class Surat_tugas extends BaseController
             'id_surat_tugas' => $uuid,
             'id_jenis_surat' => 6,
             'id_nomor_surat' =>  $no . '/LL16/' . $nosur . '/' . date('Y'),
-            'id_status' => 4,
-            'id_uprov' => 4,
             'is_active' => 0,
+            'created_by' => idUser()
         ];
 
         $m_surgas->saveSurgas($data);
-        return redirect()->to('surat_tugas');
+        return redirect()->to('surattugas');
     }
 
     public function addPegawaiSpt()
@@ -211,13 +213,7 @@ class Surat_tugas extends BaseController
 
         $m_surgas_pegawai->saveSurgasPegawai($data);
 
-        $dataStatus = [
-            'id_status' => 0
-        ];
-
-        $m_surgas->updateSurgas($id_surat, $dataStatus);
-
-        return redirect()->to('/surat_tugas');
+        return redirect()->to('surattugas');
     }
 
     public function updatePegawaiSpt()
@@ -231,7 +227,7 @@ class Surat_tugas extends BaseController
         ];
         $m_surgas_pegawai->where('id_surat_tugas', $id);
         $m_surgas_pegawai->set($data)->update();
-        return redirect()->to('/surat_tugas');
+        return redirect()->to('surattugas');
     }
 
     public function addverifikator()
@@ -245,87 +241,48 @@ class Surat_tugas extends BaseController
             'verifikator' => $verifyarray
         ];
         $m_surgas->updateSurgas($id_surat, $dataStatus);
-        return redirect()->to('/surat_tugas');
+        return redirect()->to('surattugas');
     }
 
 
     public function verify()
     {
+        $m_verif = new M_verifikasi();
         $m_surgas = new M_surgas();
+        $userId = idUser();
         $id_surat = $this->request->getPost('id_surat_tugas');
         $uprov = $this->request->getPost('uprov');
 
+        $data = [
+            'id_surat' => $id_surat,
+            'id_status' => $uprov,
+            'id_user' => $userId
+        ];
 
+        $m_verif->createVerifikasi($data);
 
         switch ($uprov) {
-            case '1':
-                $dataUp = [
-                    'id_uprov' => $uprov,
-                    'tanggal_terbit' => date('Y-m-d H:i:s')
+            case '11':
+                $surgas = [
+                    'is_active' => '1'
                 ];
-
-                $m_surgas->updateSurgas($id_surat, $dataUp);
-
-                break;
-            case '2':
-                $dataUp = [
-                    'id_uprov' => $uprov,
-                    'tanggal_terbit' => date('Y-m-d H:i:s')
-                ];
-
-                $m_surgas->updateSurgas($id_surat, $dataUp);
-                break;
-            case '3':
-                $dataUp = [
-                    'id_uprov' => $uprov,
-                    'tanggal_terbit' => date('Y-m-d H:i:s')
-                ];
-                $m_surgas->updateSurgas($id_surat, $dataUp);
-                break;
+                $m_surgas->updateSurgas($id_surat, $surgas);
             default:
-                // Tindakan default jika tidak ada nilai tombol yang sesuai
                 break;
         }
-        return redirect()->to('/surat_tugas');
+        return redirect()->to('surattugas');
     }
 
     public function tandaTangan()
     {
-        $session = service('session');
-        $authentication = service('authentication');
-
-        if ($authentication->check()) {
-            // Pengguna sedang login
-            $user = $authentication->user();
-            // Mendapatkan ID pengguna yang sedang login
-            $userId = $user->id;
-
-            $m_userpegawai = new M_userpegawai();
-            $m_pegawai = new M_pegawai();
-
-            $pegawai = $m_pegawai->findAll();
-            // Menyimpan data pegawai ke dalam sesi
-            $session->set('logged_in.pegawai', $pegawai);
-            // Mendapatkan pegawai berdasarkan id pengguna yang sedang login
-            $userPegawai = $m_userpegawai->where('id_user', $userId)->first();
-
-            $id_pegawai = $userPegawai['id_pegawai'];
-        }
-
-
         $m_surgas = new M_surgas();
+        $m_verif = new M_verifikasi();
         $id_surat = $this->request->getPost('id_surat_tugas');
         $status = $this->request->getPost('status');
-
-
-
         switch ($status) {
             case '1':
-                // Generate QR code
                 $qrCodeText = base_url('lihatTte/' . $id_surat);
                 $qrCodeSize = 150;
-
-                // Create QR code
                 $qrCode = QrCode::create($qrCodeText)
                     ->setEncoding(new Encoding('UTF-8'))
                     ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
@@ -345,47 +302,48 @@ class Surat_tugas extends BaseController
                 $result->saveToFile($qrCodeImagePath);
 
                 $dataStatus = [
-                    'id_status' => $status,
                     'tanggal_terbit' => date('Y-m-d H:i:s'),
-                    'id_penandatangan' => $id_pegawai,
+                    'id_penandatangan' => idPegawai(),
                     'is_active' => 1,
                     'qr_code_image_path' => $qrCodeImagePath
                 ];
 
                 $m_surgas->updateSurgas($id_surat, $dataStatus);
 
-                break;
-            case '2':
-
-
-                $dataStatus = [
+                $stts = [
+                    'id_surat' => $id_surat,
                     'id_status' => $status,
-                    'tanggal_terbit' => date('Y-m-d H:i:s')
+                    'id_user' => idUser()
                 ];
 
-                $m_surgas->updateSurgas($id_surat, $dataStatus);
+                $m_verif->createVerifikasi($stts);
+
+
+                break;
+            case '2':
+                $stts = [
+                    'id_surat' => $id_surat,
+                    'id_status' => $status,
+                    'id_user' => idUser()
+                ];
+
+                $m_verif->createVerifikasi($stts);
 
                 break;
             case '3':
 
-
-                $dataStatus = [
+                $stts = [
+                    'id_surat' => $id_surat,
                     'id_status' => $status,
-                    'tanggal_terbit' => date('Y-m-d H:i:s')
+                    'id_user' => idUser()
                 ];
 
-                $m_surgas->updateSurgas($id_surat, $dataStatus);
-
+                $m_verif->createVerifikasi($stts);
                 break;
             default:
-                // Tindakan default jika tidak ada nilai tombol yang sesuai
                 break;
         }
-
-
-
-
-        return redirect()->to('/surat_tugas');
+        return redirect()->to('surattugas');
     }
 
 
@@ -441,29 +399,21 @@ class Surat_tugas extends BaseController
             '12' => 'Desember'
         );
         $bulan = $bulanarray[$bln];
-
-
         $data = [
             'title' => "Tanda Tangan",
             'surgas' => $surgas,
             'tglterbit' => $tgl . ' ' . $bulan . ' ' . $thn
 
         ];
-
-
         return view('public/data-qrcode', $data);
     }
 
 
     public function SeeTo($idSurat)
     {
-
-        $auth = service('authentication');
-        $user = $auth->user();
-        $email = $user->email;
+        $email = user()->email;
         $m_surgas = new M_surgas();
         $m_surgas->tambahDilihatOleh($idSurat, $email);
-
         return $this->response->setJSON(['message' => 'Pengguna ditambahkan ke daftar dilihat']);
     }
 
@@ -523,9 +473,6 @@ FROM
         $nip = $surgas->nip_pegawai;
         $pangkatp = $surgas->pangkat_pegawai;
         $golp = $surgas->gol_pegawai;
-
-
-
 
         $array_nama = explode("<br>", $namap);
         $array_jbp = explode("<br>", $jbp);
@@ -613,7 +560,6 @@ FROM
     public function getKodeSurat()
     {
         $keyword = $this->request->getVar('keyword'); // Ambil kata kunci dari permintaan AJAX
-
         // Lakukan kueri pencarian kode surat berdasarkan kata kunci
         $kodeSuratModel = new M_reff(); // Gantikan 'KodeSuratModel' dengan model Anda yang sesuai
         $results = $kodeSuratModel->searchKodeSurat($keyword); // Buat metode 'searchKodeSurat()' pada model Anda

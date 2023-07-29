@@ -60,30 +60,31 @@ if (!function_exists('idWilayah')) {
                 return $userPegawai['id_wilayah'];
             }
         }
+        return null;
     }
-
-    return null;
 }
-
 
 if (!function_exists('dataPegawai')) {
     function dataPegawai()
     {
         $db = db_connect();
-        $m_userpegawai = new M_userpegawai();
-
-        $userId = idUser();
-        if ($userId) {
-            $userPegawai = $m_userpegawai->where('id_user', $userId)->first();
-            if ($userPegawai) {
-                $pegawaiId = $userPegawai['id_pegawai'];
-                $pegawai = $db->query('SELECT * from v_pegawai where id_pegawai="' . $pegawaiId . '"')->getResult();
-                if ($pegawai) {
-                    return $pegawai;
-                }
-            }
+        $pegawai = $db->query('SELECT * from v_pegawai')->getResult();
+        if ($pegawai) {
+            return $pegawai;
         }
+        return null;
+    }
+}
 
+if (!function_exists('dataPersonal')) {
+    function dataPersonal()
+    {
+        $db = db_connect();
+        $idp = idPegawai();
+        $pegawai = $db->query('SELECT * from v_pegawai where id_pegawai="' . $idp . '"')->getRow();
+        if ($pegawai) {
+            return $pegawai;
+        }
         return null;
     }
 }

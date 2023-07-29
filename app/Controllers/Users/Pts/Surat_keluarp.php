@@ -109,7 +109,7 @@ class Surat_keluarp extends BaseController
         $M_surat->saveSurat($data);
 
 
-        return redirect()->to('/surat_keluarp')->with('success', "SUKSES");
+        return redirect()->to('/suratkeluarp')->with('success', "SUKSES");
       } else {
         return $file->getErrorString();
       }

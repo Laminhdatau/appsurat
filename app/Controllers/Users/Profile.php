@@ -10,11 +10,16 @@ class Profile extends BaseController
 
     public function index()
     {
-        $db=db_connect();
-        $query = $db->query("SELECT * from v_ulevel");
 
-        $users = $query->getResultArray();
-
+        $db = db_connect();
+        $query = $db->query("SELECT * from v_ulevel u
+        ,t_user_pegawai up 
+        ,v_pegawai p
+        where up.id_user=u.id_user
+        and p.id_pegawai=up.id_pegawai
+        and u.id_user='" . idUser() . "'
+        ");
+        $users = $query->getRow();
         $data = [
             'title' => 'Profile',
             'users' => $users

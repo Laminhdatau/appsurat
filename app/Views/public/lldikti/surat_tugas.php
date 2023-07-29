@@ -24,8 +24,7 @@
                             <th>Tanda Tangan</th>
                             <th>
                                 <?php
-                                $userId = idUser();
-                                if ($userId == '16') { ?>
+                                if (in_groups('leadl')) { ?>
                                     Aksi
                                 <?php } else { ?>
                                     <button class="badge badge-primary" data-target="#addModal" data-toggle="modal"><i class="fas fa-plus"></i> Buat Surat</button>
@@ -44,10 +43,8 @@
                                     <p><?= $s['id_nomor_surat']; ?></p>
                                     <p><?php
                                         $peri = $s['perihal'];
-                                        $words = explode(' ', $peri); // Memisahkan kalimat menjadi array kata-kata
-                                        $max_words = 3; // Jumlah maksimum kata yang ingin diambil
-
-                                        // Mengambil potongan teks sekitar 4-5 kata dari awal kalimat
+                                        $words = explode(' ', $peri);
+                                        $max_words = 3;
                                         $perite = implode(' ', array_slice($words, 0, $max_words));
                                         if (count($words) > $max_words) {
                                             $perite .= ' .....';
@@ -59,48 +56,49 @@
                                 <td class="col-5">
                                     <?php
                                     $dasar = $s['dasar'];
-                                    $explodedDasar = explode('<br>', $dasar);
 
+                                    $explodedDasar = explode('<br>', $dasar);
                                     if (count($explodedDasar) > 1) {
-                                        // Jika string '<br>' ada di dalam $dasar, tampilkan nilai setelah pemisahan
                                         foreach ($explodedDasar as $item) {
                                             echo '<li>' . $item . '</li>';
                                         }
                                     } else {
-                                        // Jika string '<br>' tidak ada di dalam $dasar, tampilkan nilai asli
                                         echo $dasar;
                                     }
                                     ?>
                                     <div id="tampil"></div>
 
-                                    <form id="saveDasar">
+
+                                    <form class="saveDasar" data-id="<?= $s['id_surat_tugas']; ?>">
                                         <div>
                                             <input type="hidden" name="id_surat_tugas" value="<?= $s['id_surat_tugas']; ?>">
-                                            <div id="input-container"></div>
-                                            <button type="button" class="badge badge-secondary tbh" id="add-input"><i class="fas fa-plus"></i> Tambah Dasar</button>
-                                            <button type="submit" class="badge badge-primary" id="bt-simpan">Simpan Dasar</button>
+                                            <div id="input-container" data-id="<?= $s['id_surat_tugas']; ?>"></div>
+                                            <?php if (empty($s['qr_code_image_path'])) { ?>
+                                                <button type="button" class="badge badge-secondary tbh add-input" data-id="<?= $s['id_surat_tugas']; ?>"><i class="fas fa-plus"></i> Input Dasar</button>
+                                                <button type="submit" class="badge badge-primary" id="bt-simpan">Simpan Dasar</button>
+                                            <?php } ?>
                                         </div>
                                     </form>
 
                                 </td>
 
                                 <td class="col-5">
-                                    <?php if (!empty($s['nama_pegawai'])) { ?>
-                                        <p><?= $s['nama_pegawai']; ?></p>
-                                        <button class="badge badge-secondary" data-toggle="modal" data-target="#updatePegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-edit"></i> Update Nama Di SPT</button>
+                                    <p><?= $s['nama_pegawai']; ?></p>
+                                    <?php if (empty($s['qr_code_image_path'])) { ?>
+                                        <?php if (!empty($s['nama_pegawai'])) { ?>
+                                            <button class="badge badge-secondary" data-toggle="modal" data-target="#updatePegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-edit"></i> Update Nama Di SPT</button>
 
-                                    <?php } else { ?>
-                                        <button class="badge badge-primary" data-toggle="modal" data-target="#tambahPegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-plus"></i> Tambah Nama Di SPT</button>
+                                        <?php } else { ?>
+                                            <button class="badge badge-primary" data-toggle="modal" data-target="#tambahPegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-plus"></i> Tambah Nama Di SPT</button>
+                                        <?php } ?>
                                     <?php } ?>
                                 </td>
 
                                 <td>
                                     <?php
                                     $tujuan_surat = $s['tujuan_surat'];
-                                    $words = explode(' ', $tujuan_surat); // Memisahkan kalimat menjadi array kata-kata
-                                    $max_words = 5; // Jumlah maksimum kata yang ingin diambil
-
-                                    // Mengambil potongan teks sekitar 4-5 kata dari awal kalimat
+                                    $words = explode(' ', $tujuan_surat);
+                                    $max_words = 5;
                                     $short_text = implode(' ', array_slice($words, 0, $max_words));
                                     if (count($words) > $max_words) {
                                         $short_text .= ' .....';
@@ -113,25 +111,32 @@
                                 </td>
 
                                 <td>
-                                    <?php if ($s['id_status'] == 1) { ?>
+                                    <?php $status = $s['id_status'];
+                                    $starray = explode(',', $status);
+                                    ?>
+                                    <?php
+                                    if (in_array("1", $starray)) { ?>
                                         <img src="<?= base_url($s['qr_code_image_path']); ?>" alt="">
                                     <?php } else { ?>
                                         <?php if (empty($s['verifikator'])) { ?>
                                             <div style="display: flex; align-items: center;">
                                                 <a>Belum Di Tandatangani</a>
-
                                             </div>
                                         <?php } ?>
                                     <?php } ?>
                                 </td>
 
                                 <td>
-                                    <?php if (!empty($s['qr_code_image_path'])) { ?>
+                                    <?php if (idUser() != '16') { ?>
+                                        <?php if (!empty($s['qr_code_image_path'])) { ?>
+                                            <a class="badge badge-primary btn-dtl" target="_blank" href="<?= base_url('DetailSuratPdf/' . $s['id_surat_tugas']); ?>"><i class="fas fa-book"></i> Lihat Surat</a><br>
+                                        <?php } ?>
+                                    <?php } else { ?>
                                         <a class="badge badge-primary btn-dtl" target="_blank" href="<?= base_url('DetailSuratPdf/' . $s['id_surat_tugas']); ?>"><i class="fas fa-book"></i> Lihat Surat</a><br>
                                     <?php } ?>
 
 
-                                    <?php if ($userId !== '16') { ?>
+                                    <?php if (idUser() !== '16') { ?>
                                         <?php if (!empty($s['qr_code_image_path'])) { ?>
                                             <button class="badge badge-dark"><i class="fas fa-edit"></i> Ubah Data</button><br>
                                         <?php } else { ?>
@@ -139,37 +144,43 @@
                                         <?php } ?>
                                     <?php } ?>
 
-
-
-
                                     <?php if (!empty($s['nama_pegawai'])) { ?>
-                                        <?php if ($userId == '16') { ?>
+
+                                        <?php if (idUser() == '16') { ?>
+
                                             <?php if (
                                                 !empty($s['nama_pegawai']) ||
                                                 !empty($s['verifikator']) ||
+                                                !empty($s['dasar']) ||
                                                 !empty($s['tanggal_terbit']) ||
                                                 !empty($s['tgl_mulai']) ||
                                                 !empty($s['tgl_selesai']) ||
                                                 !empty($s['tujuan_surat']) ||
                                                 !empty($s['tempat_pelaksanaan'])
-                                            ) { ?>
-                                                <button class="badge badge-primary" data-toggle="modal" data-target="#tandaTangan<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Tanda Tangan</button>
-                                            <?php }  ?>
+                                            ) : ?>
+                                                <?php $status = $s['id_status'];
+
+                                                $sttsArray = explode(",", $status);
+                                                if (in_array("11", $sttsArray)) : ?>
+                                                    <?php if (empty($s['qr_code_image_path'])) { ?>
+                                                        <button class="badge badge-primary" data-toggle="modal" data-target="#tandaTangan<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Tanda Tangan</button>
+                                                    <?php } ?>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+
+
                                         <?php } else { ?>
+
                                             <?php if (!empty($s['verifikator'])) {
                                                 $verifikatorIds = explode(',', $s['verifikator']);
                                                 $idPegawaiSession = idPegawai();
                                                 if (in_array($idPegawaiSession, $verifikatorIds)) {
                                             ?>
-                                                    <?php if ($s['id_uprov'] == 4) { ?>
-                                                        <button class="badge badge-primary" data-toggle="modal" data-target="#verifikasi<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Verifikasi</button><br>
-                                                    <?php } else if ($s['id_uprov'] == 1) { ?>
-                                                        <button class="badge badge-success"><i class="fas fa-check"></i> Terverifikasi</button><br>
-                                                    <?php } else if ($s['id_uprov'] == 2) { ?>
-                                                        <button class="badge badge-warning"><i class="fas fa-edit"></i> Revisi</button><br>
-                                                    <?php } else if ($s['id_uprov'] == 3) { ?>
-                                                        <button class="badge badge-danger"><i class="fas fa-times"></i> Ditolak</button><br>
-                                                    <?php } ?>
+                                                    <?php $status = $s['id_status'];
+                                                    $sttsArray = explode(",", $status);
+                                                    if (!in_array("1", $sttsArray)) : ?>
+                                                        <button class="badge badge-primary" data-toggle="modal" data-target="#verifikasi<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Verifikasi</button>
+                                                    <?php endif ?>
                                             <?php
                                                 }
                                             }
@@ -177,19 +188,19 @@
                                         <?php } ?>
                                     <?php } ?>
 
-                                    <?php if ($userId !== '16') { ?>
-
+                                    <?php if (idUser() !== '16') { ?>
                                         <?php if (
-                                            !empty($s['nama_pegawai']) ||
-                                            !empty($s['tanggal_terbit']) ||
-                                            !empty($s['tgl_mulai']) ||
-                                            !empty($s['tgl_selesai']) ||
-                                            !empty($s['tujuan_surat']) ||
-                                            !empty($s['tempat_pelaksanaan'])
+                                            !empty($s['nama_pegawai']) &&
+                                            empty($s['tanggal_terbit']) &&
+                                            !empty($s['tgl_mulai']) &&
+                                            !empty($s['tgl_selesai']) &&
+                                            !empty($s['tujuan_surat']) &&
+                                            !empty($s['tempat_pelaksanaan']) && empty($s['qr_code_image_path'] && !empty($s['dasar']))
                                         ) { ?>
                                             <button class="badge badge-primary" data-toggle="modal" data-target="#addverifikator<?= $s['id_surat_tugas']; ?>"><i class="fas fa-plus"></i> Tambah Verifikator</button>
-                                    <?php }
-                                    } ?>
+                                        <?php } ?>
+
+                                    <?php } ?>
                                 </td>
 
                             </tr>
@@ -269,11 +280,6 @@
                             <input type="text" name="lokasi" id="" class="form-control" placeholder="Dimana ....." required>
                         </div>
 
-                        <div class="row form-group">
-                            <label for="lokasi">Lokasi Pelaksanaan</label>
-                            <input type="text" name="lokasi" id="" class="form-control" placeholder="Dimana ....." required>
-                        </div>
-
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -329,7 +335,6 @@
                             <select name="kodesurat" id="kodeajax" class="form-control" required multiple>
                                 <?php
                                 foreach ($kodeSurat as $k) {
-
                                 ?>
                                     <option value="<?= $k['nomor_surat']; ?>"><?= $k['perihal']; ?> --( <?= $k['nomor_surat']; ?> )</option>
                                 <?php
@@ -408,21 +413,9 @@
                                 </div>
                             </div>
 
-
-
-
-
-
-
-                            <div class="row">
-                                <div class="col">
-                                    <label for="tembusup">Tembusan</label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <textarea name="tembusan" id="tembusup" cols="100" rows="2"><?= $s['tembusan']; ?></textarea>
-                                </div>
+                            <div class="row form-group">
+                                <label for="tembus">Tembusan</label>
+                                <input type="text" name="tembusan" id="" value="<?= $s['tembusan']; ?>" class="form-control" required>
                             </div>
                         </div>
                         <br>
@@ -518,18 +511,10 @@
                     <div class="modal-body mx-auto">
                         <div class="form-group">
                             <input type="hidden" name="id_surat_tugas" value="<?= $s['id_surat_tugas']; ?>">
-                            <?php if (empty($s['id_uprov']) || $s['id_uprov'] == 4) { ?>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                <button class="btn btn-success" name="uprov" value="1">Setujui</button>
-                                <button class="btn btn-danger" name="uprov" value="3">Tolak</button>
-                                <button class="btn btn-warning" name="uprov" value="2">Revisi</button>
-                            <?php } elseif ($s['id_uprov'] == 1) { ?>
-                                <h5 class="text-success">Telah Disetujui Oleh Verifikator</h5>
-                            <?php } elseif ($s['id_uprov'] == 2) { ?>
-                                <h5 class="text-danger">Telah Ditolak</h5>
-                            <?php } elseif ($s['id_uprov'] == 3) { ?>
-                                <h5 class="text-warning">Revisi</h5>
-                            <?php } ?>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button class="btn btn-success" name="uprov" value="11">Setujui</button>
+                            <button class="btn btn-danger" name="uprov" value="3">Tolak</button>
+                            <button class="btn btn-warning" name="uprov" value="2">Revisi</button>
                         </div>
                     </div>
                 </form>
@@ -552,18 +537,10 @@
                     <div class="modal-body mx-auto">
                         <div class="form-group">
                             <input type="hidden" name="id_surat_tugas" value="<?= $s['id_surat_tugas']; ?>">
-                            <?php if (empty($s['id_status']) || $s['id_status'] == 0) { ?>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                <button class="btn btn-success" name="status" value="1">Setujui</button>
-                                <button class="btn btn-danger" name="uprov" value="3">Tolak</button>
-                                <button class="btn btn-warning" name="uprov" value="2">Revisi</button>
-                            <?php } elseif ($s['id_status'] == 1) { ?>
-                                <h5 class="text-success">Telah Disetujui Oleh Verifikator</h5>
-                            <?php } elseif ($s['id_status'] == 2) { ?>
-                                <h5 class="text-warning">Revisi</h5>
-                            <?php } elseif ($s['id_status'] == 3) { ?>
-                                <h5 class="text-danger">Telah Ditolak</h5>
-                            <?php } ?>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button class="btn btn-success" name="status" value="1">Setujui</button>
+                            <button class="btn btn-danger" name="uprov" value="3">Tolak</button>
+                            <button class="btn btn-warning" name="uprov" value="2">Revisi</button>
                         </div>
                     </div>
                 </form>
@@ -682,6 +659,8 @@
         });
     <?php } ?>
 
+
+
     <?php foreach ($surgas as $s) { ?>
 
         $('#verifikator button[name="sve"]').click(function(e) {
@@ -715,13 +694,6 @@
 </script>
 
 
-<script>
-    ClassicEditor
-        .create(document.querySelector('#tembusup'))
-        .catch(error => {
-            console.error(error);
-        });
-</script>
 
 
 
@@ -746,25 +718,59 @@
     });
 </script>
 
+<!-- 
+<script>
+    <php foreach ($surgas as $s) { ?>
+        $('#bt-simpan').hide();
+        $(document).ready(function() {
+            var container = $("#input-container");
+            var addInputButton = $("#add-input");
 
+            // Ketika tombol "Add More" diklik
+            addInputButton.click(function() {
+                var newInput = '<div class="form-group">' +
+                    '<input type="text" name="dasar[]" class="form-control" placeholder="ex. Keputusan ..." required>' +
+                    '</div>';
+                container.append(newInput);
+                $('#bt-simpan').show();
+
+
+                // Ajax request untuk mengirim data form tanpa reload halaman
+                $("#saveDasar").submit(function(event) {
+                    event.preventDefault();
+                    $.ajax({
+                        type: "POST",
+                        url: "saveDasar", // Ganti dengan URL ke fungsi save_data di controller Anda
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            location.reload();
+                        }
+                    });
+                });
+            });
+        });
+    <php } ?>
+</script> -->
 
 <script>
-    $('#bt-simpan').hide();
     $(document).ready(function() {
-        var container = $("#input-container");
-        var addInputButton = $("#add-input");
+        $(".saveDasar").each(function(index, element) {
+            var idSuratTugas = $(element).data("id");
+            var container = $("#input-container[data-id='" + idSuratTugas + "']");
+            var addInputButton = $(".add-input[data-id='" + idSuratTugas + "']");
+            var btSimpan = $("#bt-simpan");
 
-        // Ketika tombol "Add More" diklik
-        addInputButton.click(function() {
-            var newInput = '<div class="form-group">' +
-                '<input type="text" name="dasar[]" class="form-control" placeholder="ex. Keputusan ..." required>' +
-                '</div>';
-            container.append(newInput);
-            $('#bt-simpan').show();
-
+            // Ketika tombol "Add More" diklik
+            addInputButton.click(function() {
+                var newInput = '<div class="form-group">' +
+                    '<input type="text" name="dasar[]" class="form-control" placeholder="ex. Keputusan ..." required>' +
+                    '</div>';
+                container.append(newInput);
+                btSimpan.show();
+            });
 
             // Ajax request untuk mengirim data form tanpa reload halaman
-            $("#saveDasar").submit(function(event) {
+            $(element).submit(function(event) {
                 event.preventDefault();
                 $.ajax({
                     type: "POST",
@@ -776,13 +782,9 @@
                 });
             });
         });
+
+        $("#bt-simpan").hide();
     });
 </script>
-
-
-
-
-
-
 
 <?= $this->endSection(); ?>

@@ -15,7 +15,6 @@ class Surat_masukp extends BaseController
 
     $M_surat = new M_surat();
     $instansiId = idInstansi();
-    d($instansiId);
     $wilayahId = idWilayah();
     $idInstansiParam = (isset($id_instansi) && !empty($id_instansi)) ? $id_instansi : "'" . $instansiId . "'";
     $idWilayahParam = (isset($id_wilayah) && !empty($id_wilayah)) ? $id_wilayah : "'" . $wilayahId . "'";

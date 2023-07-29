@@ -49,10 +49,12 @@
                                     <p><?= $s['perihal']; ?></p>
                                 </td>
                                 <td class="col-5">
-                                    <?php if ($s['id_status'] == 0) { ?>
+                                    <?php if ($s['id_status'] == 0 || $s['id_status'] == 8) { ?>
                                         <a type="button" class="badge badge-primary"><i class="fas fa-check"> </i> Terkirim</a>
-                                    <?php } elseif ($s['id_status'] == 5) { ?>
+                                    <?php } elseif ($s['id_status'] == 5 || $s['id_status'] == 11) { ?>
                                         <a type="button" class="badge badge-success"><i class="fas fa-check"></i><i class="fas fa-check"> </i> Dibaca</a>
+                                    <?php } elseif ($s['id_status'] == 10) { ?>
+                                        <a type="button" class="badge badge-dark"><i class="fas fa-check"></i><i class="fas fa-check"> </i> Terkonfirmasi</a>
                                     <?php } ?>
 
                                 </td>
@@ -83,7 +85,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="<?= base_url('save_sukerp'); ?>" method="post" enctype="multipart/form-data">
+                <form action="<?= base_url('savesukerp'); ?>" method="post" enctype="multipart/form-data">
 
                     <div class="row form-group">
                         <label for="">Nomor Surat</label>

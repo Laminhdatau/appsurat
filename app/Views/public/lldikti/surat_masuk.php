@@ -95,13 +95,17 @@
                                 <td>
                                     <?php if ($s['id_status'] == 0) : ?>
                                         <a type="button" data-toggle="modal" data-target="#detailModal<?= $s['id_surat']; ?>" class="badge btn-success btn-lihat" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
-                                        <a type="button" class="badge btn-success btn-konfirmasi" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-check"></i> Konfirmasi</a>
                                         <?php if (!$disposisiFound) { ?>
+                                            <a type="button" class="badge btn-success btn-konfirmasi" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-check"></i> Konfirmasi</a>
                                             <a type="button" id="btn-disposisi" class="badge badge-primary" data-target="#disposisi<?= $s['id_surat']; ?>" data-toggle="modal"><i class="fas fa-share"></i> Disposisi</a>
                                         <?php }  ?>
                                     <?php elseif ($s['id_status'] == '10') : ?>
                                         <a type="button" data-toggle="modal" class="badge btn-success btn-lihat" data-target="#detailModal<?= $s['id_surat']; ?>" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
                                         <a type="button" class="badge btn-dark"><i class="fas fa-check"></i> Terkonfirmasi</a>
+
+                                    <?php elseif ($s['id_status'] == '11') : ?>
+                                        <a type="button" data-toggle="modal" class="badge btn-success btn-lihat" data-target="#detailModal<?= $s['id_surat']; ?>" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
+
                                     <?php endif; ?>
                                 </td>
 
@@ -276,6 +280,8 @@
                 }
 
             });
+            location.reload();
+
         });
     });
 </script>
@@ -288,7 +294,7 @@
         $('.btn-lihat').click(function() {
             var idSurat = $(this).data('id');
             $.ajax({
-                url: '<?= base_url('dilihat_oleh/'); ?>' + idSurat,
+                url: '<?= base_url('dilihatoleh/'); ?>' + idSurat,
                 type: 'POST',
                 success: function(response) {
                     console.log(idSurat); // Tampilkan pesan sukses pada konsol

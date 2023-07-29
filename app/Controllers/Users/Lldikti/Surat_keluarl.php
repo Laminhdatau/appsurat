@@ -146,12 +146,12 @@ class Surat_keluarl extends BaseController
         $M_surat = new M_surat();
         $M_surat->saveSurat($data);
 
-        return redirect()->to('/surat_keluarl')->with('success', "SUKSES");
+        return redirect()->to('/suratkeluarl')->with('success', "SUKSES");
       } else {
         return $file->getErrorString();
       }
     } else {
-      return redirect()->to('/surat_keluarl')->with('gagal', "Jenis file yang diunggah tidak valid. Hanya file PDF, JPG, JPEG, dan PNG yang diperbolehkan.");
+      return redirect()->to('/suratkeluarl')->with('gagal', "Jenis file yang diunggah tidak valid. Hanya file PDF, JPG, JPEG, dan PNG yang diperbolehkan.");
     }
   }
 
@@ -211,7 +211,7 @@ class Surat_keluarl extends BaseController
       $m_verif->updateVerifikasi($surat, $dataVer);
     }
 
-    return redirect()->to('/surat_keluarl')->with('success', "SUKSES");
+    return redirect()->to('/suratkeluarl')->with('success', "SUKSES");
   }
 
 
@@ -271,7 +271,7 @@ class Surat_keluarl extends BaseController
 
 
 
-    return redirect()->to('/surat_keluarl')->with('success', "SUKSES");
+    return redirect()->to('/suratkeluarl')->with('success', "SUKSES");
   }
 
 
@@ -341,7 +341,7 @@ class Surat_keluarl extends BaseController
     }
 
 
-    return redirect()->to('/surat_keluarl');
+    return redirect()->to('/suratkeluarl');
   }
 
 
@@ -350,8 +350,7 @@ class Surat_keluarl extends BaseController
   public function dilihatOleh($idSurat)
   {
 
-    $auth = service('authentication');
-    $user = $auth->user();
+    $user = user();
     $email = $user->email;
     $M_surat = new M_surat();
     $M_surat->tambahDilihatOleh($idSurat, $email);
