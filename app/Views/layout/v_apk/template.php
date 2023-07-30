@@ -75,7 +75,6 @@
                         <a class="nav-link" href="<?= base_url('suratkeluarl'); ?>">
                             <i class="fas fa-fw fa-envelope"></i>
                             <span>Surat Keluar</span>
-                            <span class="badge float-right badge-danger" id="countNotiflldiktiMasuk"></span>
                         </a>
                     </li>
 
@@ -83,7 +82,7 @@
                         <a class="nav-link" href="<?= base_url('suratmasukdis'); ?>">
                             <i class="fas fa-fw fa-envelope"></i>
                             <span>Surat Disposisi</span>
-                            <span class="badge float-right badge-danger" id="countNotiflldiktiMasuk"></span>
+                            <span class="badge float-right badge-danger" id="countDisposisi"></span>
                         </a>
                     </li>
 
@@ -91,7 +90,7 @@
                         <a class="nav-link" href="<?= base_url('surattugas'); ?>">
                             <i class="fas fa-fw fa-envelope"></i>
                             <span>Surat Tugas</span>
-                            <span class="badge float-right badge-danger" id="countNotiflldiktiMasuk"></span>
+                            <span class="badge float-right badge-danger" id="countsurgas"></span>
                         </a>
                     </li>
                     <div class="sidebar-heading">Logout</div>
@@ -114,7 +113,7 @@
                         <a class="nav-link" href="<?= base_url('suratmasukl'); ?>">
                             <i class="fas fa-fw fa-envelope"></i>
                             <span>Surat Masuk</span>
-                            <span class="badge float-right badge-danger" id="countNotiflldiktiMasuk"></span>
+                            <span class="badge float-right badge-danger" id="countsumasl"></span>
                         </a>
                     </li>
 
@@ -123,7 +122,7 @@
                         <a class="nav-link" href="<?= base_url('surattugas'); ?>">
                             <i class="fas fa-fw fa-envelope"></i>
                             <span>Surat Tugas</span>
-                            <span class="badge float-right badge-danger" id="countNotiflldiktiMasuk"></span>
+                            <span class="badge float-right badge-danger" id="countsurgas"></span>
                         </a>
                     </li>
                     <div class="sidebar-heading">Logout</div>
@@ -146,7 +145,7 @@
                         <a class="nav-link" href="<?= base_url('suratmasukp'); ?>">
                             <i class="fas fa-fw fa-envelope"></i>
                             <span>Surat Masuk</span>
-                            <span class="badge float-right badge-danger" id="countNotiflldiktiMasuk"></span>
+                            <span class="badge float-right badge-danger" id="countsumasp"></span>
                         </a>
                     </li>
                     <div class="sidebar-heading">Logout</div>
@@ -164,12 +163,17 @@
                 <?php if (in_groups('admpts')) : ?>
                     <div class="sidebar-heading">Surat</div>
                     <hr class="sidebar-divider my-0">
-
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('suratmasukp'); ?>">
+                            <i class="fas fa-fw fa-envelope"></i>
+                            <span>Surat Masuk</span>
+                            <span class="badge float-right badge-danger" id="countsumasp"></span>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('suratkeluarp'); ?>">
                             <i class="fas fa-fw fa-envelope"></i>
                             <span>Surat Keluar</span>
-                            <span class="badge float-right badge-danger" id="countNotiflldiktiMasuk"></span>
                         </a>
                     </li>
 
@@ -390,14 +394,14 @@
 
 
     <!-- Tambahkan JavaScript untuk mengirim permintaan Ajax dan memperbarui angka notifikasi -->
-    <!-- <script>
+    <script>
         function getCountNotifikasi() {
             $.ajax({
-                url: 'get_notifikasil',
+                url: '<?= base_url('notif'); ?>',
                 type: 'GET',
                 success: function(response) {
-                    // console.log(response);
-                    $('#countNotiflldiktiMasuk').text(response);
+                    console.log(response);
+                    $('#countsumasp').text(response);
                 },
                 error: function(xhr, status, error) {
                     console.error(error);
@@ -405,27 +409,16 @@
             });
         }
 
-        function resetNotifikasi() {
-            $.ajax({
-                url: 'upstatus',
-                type: 'POST',
-                success: function() {
-                    getCountNotifikasi();
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                }
-            });
-        }
+
 
         $(document).ready(function() {
             getCountNotifikasi();
 
-            $('#countNotiflldiktiMasuk').click(function() {
+            $('#countsumasp').click(function() {
                 resetNotifikasi();
             });
         });
-    </script> -->
+    </script>
 
 
 

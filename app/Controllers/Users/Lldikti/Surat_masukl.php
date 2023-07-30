@@ -194,14 +194,12 @@ class Surat_masukl extends BaseController
   public function get_notifikasil()
   {
     $M_surat = new M_surat();
-    $countNotiflldiktiMasuk = $M_surat->query("SELECT COUNT(id_status) as notif
+    $hitung = $M_surat->query("SELECT COUNT(id_status) as notif
                 FROM t_surat
                 WHERE id_jenis_surat = '3' AND id_status = '0';");
 
-    // Ambil nilai hitungan notifikasi dari query Anda
-    $notifikasil = $countNotiflldiktiMasuk->getRow()->notif;
+    $notifikasil = $hitung->getRow()->notif;
 
-    // Kembalikan nilai hitungan notifikasi sebagai respons Ajax
     echo $notifikasil;
   }
 

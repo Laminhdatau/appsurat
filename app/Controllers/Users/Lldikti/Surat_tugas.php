@@ -74,13 +74,15 @@ class Surat_tugas extends BaseController
 
         $surgas = $querySurgas->getResultArray();
         $pegawai = $m_pegawai->where('id_pegawai !=', 0)->findAll();
+        $pegawaiverify = $m_pegawai->where('id_pegawai in(select id_pegawai from db_persuratan.t_user_pegawai)')->findAll();
 
 
         $data = [
             'title' => "Surat Tugas",
             'kodeSurat' => $kodeSurat,
             'surgas' => $surgas,
-            'pegawai' => $pegawai
+            'pegawai' => $pegawai,
+            'pegawaiverif' => $pegawaiverify
         ];
 
 
@@ -159,7 +161,6 @@ class Surat_tugas extends BaseController
             'tempat_pelaksanaan' => $this->request->getPost('lokasi'),
             'tembusan' => $this->request->getPost('tembusan'),
             'id_pejabat' => $this->request->getPost('id_pejabat'),
-            'dasar' => $this->request->getPost('dasar'),
             'is_active' => 0,
         ];
 
@@ -262,7 +263,7 @@ class Surat_tugas extends BaseController
         $m_verif->createVerifikasi($data);
 
         switch ($uprov) {
-            case '11':
+            case '12':
                 $surgas = [
                     'is_active' => '1'
                 ];

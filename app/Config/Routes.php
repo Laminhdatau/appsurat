@@ -83,7 +83,7 @@ $routes->get('suratmasukp', 'Users\\Pts\\Surat_masukp::index',['filter' => 'perm
 $routes->get('suratkeluarp', 'Users\\Pts\\Surat_keluarp::index',['filter' => 'permission:m-skpts']);
 $routes->post('savesukerp', 'Users\\Pts\\Surat_keluarp::save',['filter' => 'permission:m-skpts']);
 
-$routes->get('getnotifikasil', 'Users\\Lldikti\\Surat_masukl::get_notifikasil');
+$routes->get('notif', 'Users\\Pts\\Surat_masukp::get_notifikasi');
 
 // ======================
 

@@ -349,11 +349,8 @@ class Surat_keluarl extends BaseController
   // SETINGAN UNTUK 
   public function dilihatOleh($idSurat)
   {
-
-    $user = user();
-    $email = $user->email;
     $M_surat = new M_surat();
-    $M_surat->tambahDilihatOleh($idSurat, $email);
+    $M_surat->tambahDilihatOleh($idSurat, user()->email);
 
     return $this->response->setJSON(['message' => 'Pengguna ditambahkan ke daftar dilihat']);
   }
