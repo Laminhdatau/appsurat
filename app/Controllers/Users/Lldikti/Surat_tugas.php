@@ -41,10 +41,22 @@ class Surat_tugas extends BaseController
         $m_surgas = new M_surgas();
         $m_pegawai = new M_pegawai();
         $kodeSurat = $m_reff->findAll();
-        $aktive = '';
-        if (idUser() == '16') {
-            $aktive = "WHERE st.is_active='1'";
+        $idUser = idUser();
+        $idPegawai = idPegawai();
+        $isAdmdikti = in_groups('admdikti');
+        $verifikator = verifikator();
+
+        
+        if ($idUser == '16') {
+            $active = "WHERE st.is_active='1'";
+        } else if (!$isAdmdikti || $isAdmdikti) {
+            $active = "WHERE st.created_by='$idUser'";
+        } else if ($verifikator->verifikator) {
+            $active = "WHERE FIND_IN_SET('$idPegawai', st.verifikator)";
+        } else {
+            $active = '';
         }
+
 
         $querySurgas = $m_surgas->query("SELECT
         st.*,
@@ -62,11 +74,10 @@ class Surat_tugas extends BaseController
         LEFT JOIN t_reff_surat n ON n.nomor_surat = SUBSTRING_INDEX(SUBSTRING_INDEX(st.id_nomor_surat, '/', -2), '/', 1)
         LEFT JOIN t_verifikasi v on v.id_surat=st.id_surat_tugas
         LEFT JOIN t_status s on s.id_status=v.id_status
-        " . $aktive . "
+        " . $active . "
     GROUP BY
         st.id_surat_tugas, n.id_reff_surat, v.id_surat
-    ORDER BY
-        month(st.tanggal_terbit) = month(now()), st.tanggal_terbit;
+    order by create_at desc
     
     ");
 
@@ -549,7 +560,7 @@ FROM
             'kopr' => $kopRow
         ];
 
-
+        // return view('public/lldikti/detail_surat_tugas',  $data);
 
         $html = view('public/lldikti/detail_surat_tugas',  $data);
 
@@ -560,8 +571,7 @@ FROM
 
     public function getKodeSurat()
     {
-        $keyword = $this->request->getVar('keyword'); // Ambil kata kunci dari permintaan AJAX
-        // Lakukan kueri pencarian kode surat berdasarkan kata kunci
+        $keyword = $this->request->getVar('keyword');
         $kodeSuratModel = new M_reff(); // Gantikan 'KodeSuratModel' dengan model Anda yang sesuai
         $results = $kodeSuratModel->searchKodeSurat($keyword); // Buat metode 'searchKodeSurat()' pada model Anda
         return $this->response->setJSON($results);

@@ -4,8 +4,6 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-    <!-- Page Heading -->
-    <h1 class="h2 mb-4 text-gray-800">Surat Tugas</h1>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -13,12 +11,12 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered col-12" id="dataTable" cellspacing="0">
+                <table class="table table-bordered table-hover col-12" id="dataTable" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Nomor Surat/Perihal</th>
                             <th>Dasar</th>
-                            <th>Nama Lengkap Di SPT</th>
+                            <th>Penerima</th>
                             <th>Tujuan Surat</th>
                             <th>Tempat Pelaksanaan</th>
                             <th>Tanda Tangan</th>
@@ -59,10 +57,14 @@
                                         $class = 'info';
                                         $icon = 'check';
                                         $ket = 'Terverifikasi';
+                                    } elseif (!empty($s['verifikator'])) {
+                                        $class = 'warning';
+                                        $icon = 'clock';
+                                        $ket = 'Menunggu Verifikasi';
                                     } else {
                                         $class = 'warning';
                                         $icon = 'clock';
-                                        $ket = 'Belum Lengkap';
+                                        $ket = 'Tidak Lengkap';
                                     } ?>
 
 
@@ -122,12 +124,23 @@
                                             <?php if (!empty($s['nama_pegawai'])) { ?>
                                                 <?php
                                                 // $status=$s['id_status'];
+
                                                 if (!in_array("12", $starray)) { ?>
-                                                    <button class="badge badge-secondary" data-toggle="modal" data-target="#updatePegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-edit"></i> Update Nama Di SPT</button>
+                                                    <?php
+                                                    $veri = verifikator();
+                                                    if ($veri) {
+                                                        $verify = $veri->verifikator;
+                                                    } else {
+                                                        $verify = null;
+                                                    }
+                                                    if ($verify !== idPegawai()) { ?>
+                                                        <button class="badge badge-secondary" data-toggle="modal" data-target="#updatePegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-edit"></i> Update Penerima SPT</button>
+                                                    <?php } else { ?>
+                                                    <?php } ?>
                                                 <?php } ?>
 
                                             <?php } else { ?>
-                                                <button class="badge badge-primary" data-toggle="modal" data-target="#tambahPegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-plus"></i> Tambah Nama Di SPT</button>
+                                                <button class="badge badge-primary" data-toggle="modal" data-target="#tambahPegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-plus"></i> Tambah Penerima SPT</button>
                                             <?php } ?>
                                         <?php } ?>
                                     <?php endif; ?>
@@ -162,14 +175,9 @@
                                 </td>
 
                                 <td>
-                                    <?php if (idUser() != '16') { ?>
-                                        <?php if (!empty($s['qr_code_image_path'])) { ?>
-                                            <a class="badge badge-primary btn-dtl" target="_blank" href="<?= base_url('DetailSuratPdf/' . $s['id_surat_tugas']); ?>"><i class="fas fa-book"></i> Lihat Surat</a><br>
-                                        <?php } ?>
-                                    <?php } else { ?>
+                                    <?php if (!empty($s['qr_code_image_path'])) { ?>
                                         <a class="badge badge-primary btn-dtl" target="_blank" href="<?= base_url('DetailSuratPdf/' . $s['id_surat_tugas']); ?>"><i class="fas fa-book"></i> Lihat Surat</a><br>
                                     <?php } ?>
-
 
                                     <?php if (idUser() !== '16') { ?>
                                         <?php if (empty($s['qr_code_image_path'])) { ?>
@@ -216,7 +224,9 @@
                                                     <?php $status = $s['id_status'];
                                                     $sttsArray = explode(",", $status);
                                                     if (!in_array("11", $sttsArray)) : ?>
-                                                        <button class="badge badge-primary" data-toggle="modal" data-target="#verifikasi<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Verifikasi</button>
+                                                        <?php if (!in_array("1", $sttsArray)) : ?>
+                                                            <button class="badge badge-primary" data-toggle="modal" data-target="#verifikasi<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Verifikasi</button>
+                                                        <?php endif; ?>
                                                     <?php endif ?>
                                             <?php
                                                 }
@@ -226,6 +236,7 @@
                                     <?php } ?>
 
                                     <?php if (idUser() !== '16') { ?>
+
                                         <?php if (
                                             !empty($s['nama_pegawai']) &&
                                             empty($s['tanggal_terbit']) &&
@@ -239,6 +250,8 @@
 
                                     <?php } ?>
                                 </td>
+
+                           
 
                             </tr>
                         <?php } ?>
@@ -334,7 +347,7 @@
 
                         <div class="row">
                             <div class="col">
-                                <label for="tembus">Tembusan</label>
+                                <label for="tembus">Tembusan <span>(boleh dikosongkan)</span></label>
                             </div>
                         </div>
                         <div class="row">
@@ -505,7 +518,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="updatePegawaiModalLabel">Tambah Pegawai SPT</h5>
+                    <h5 class="modal-title" id="updatePegawaiModalLabel">Tambah Penerima SPT</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -603,8 +616,8 @@
 
                             <select name="verify[]" id="verify<?= $s['id_surat_tugas'] ?>" multiple>
                                 <?php foreach ($pegawaiverif as $v) {
-                                     ?>
-                                    
+                                ?>
+
                                     <option value="<?= $v['id_pegawai']; ?>"><?= $v['nama_lengkap']; ?></option>
                                 <?php } ?>
                             </select>
@@ -757,39 +770,7 @@
     });
 </script>
 
-<!-- 
-<script>
-    <php foreach ($surgas as $s) { ?>
-        $('#bt-simpan').hide();
-        $(document).ready(function() {
-            var container = $("#input-container");
-            var addInputButton = $("#add-input");
 
-            // Ketika tombol "Add More" diklik
-            addInputButton.click(function() {
-                var newInput = '<div class="form-group">' +
-                    '<input type="text" name="dasar[]" class="form-control" placeholder="ex. Keputusan ..." required>' +
-                    '</div>';
-                container.append(newInput);
-                $('#bt-simpan').show();
-
-
-                // Ajax request untuk mengirim data form tanpa reload halaman
-                $("#saveDasar").submit(function(event) {
-                    event.preventDefault();
-                    $.ajax({
-                        type: "POST",
-                        url: "saveDasar", // Ganti dengan URL ke fungsi save_data di controller Anda
-                        data: $(this).serialize(),
-                        success: function(response) {
-                            location.reload();
-                        }
-                    });
-                });
-            });
-        });
-    <php } ?>
-</script> -->
 
 <script>
     $(document).ready(function() {

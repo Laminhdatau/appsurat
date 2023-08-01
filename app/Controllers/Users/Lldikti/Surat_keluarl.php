@@ -71,7 +71,7 @@ class Surat_keluarl extends BaseController
     sl.filex,
     tw.id_template_wil,
     tw.id_wilayah
-    ORDER BY sl.created_at;");
+    ORDER BY sl.created_at desc");
 
     $users = $query->getResultArray();
     $sifat = $M_sifat->findAll();
@@ -115,32 +115,131 @@ class Surat_keluarl extends BaseController
     return view('public/lldikti/surat_keluar', $data);
   }
 
+
+
+
+  public function formTambahSuker()
+  {
+
+    $M_sifat = new M_sifat();
+
+    $sifat = $M_sifat->findAll();
+
+
+
+    $data = [
+      'title' => 'Tambah Surat Keluar',
+      'sifat' => $sifat
+
+    ];
+
+
+    // dd($data);
+    return view('public/lldikti/suratkeluarform/addsuratkeluarl', $data);
+  }
+
+  public function formUbahSuker($id)
+  {
+
+
+    $M_surat = new M_surat();
+    $M_sifat = new M_sifat();
+
+
+
+    $query = $M_surat->query("SELECT
+    sl.id_surat,
+    sl.perihal,
+    sl.nomor_surat,
+    sl.dilihat_oleh,
+    tw.id_surat as id_sur,
+    tw.id_template_wil,
+    tw.id_wilayah,
+    s.id_sifat,
+    s.sifat,
+    sl.tgl_surat,
+    j.jenis_surat,
+    i.nm_instansi AS dari,
+    GROUP_CONCAT(DISTINCT a.id_instansi ORDER BY a.id_instansi SEPARATOR ', ') AS id_untuk,
+    GROUP_CONCAT(DISTINCT a.nm_instansi ORDER BY a.nm_instansi SEPARATOR ', ') AS untuk,
+    sl.tembusan,
+    v.id_status,
+    sl.filex,
+    sl.created_by,
+    sl.stts_confirm
+  FROM
+    t_surat sl
+  LEFT JOIN
+    t_instansi i ON sl.id_instansi = i.id_instansi
+  LEFT JOIN
+    t_instansi a ON FIND_IN_SET(a.id_instansi, sl.id_sendto)
+  LEFT JOIN t_template_wil tw on tw.id_surat=sl.id_surat
+  JOIN
+    t_sifat s ON sl.id_sifat = s.id_sifat
+  JOIN
+    t_jenis_surat j ON sl.id_jenis_surat = j.id_jenis_surat
+ left join t_verifikasi v on v.id_surat=sl.id_surat
+ left join t_status st on st.id_status=v.id_status
+ WHERE
+    sl.id_jenis_surat in(1) and
+    sl.is_active in (0,1) and sl.id_surat='" . $id . "'
+  GROUP BY
+    sl.id_surat,
+    sl.perihal,
+    sl.nomor_surat,
+    s.id_sifat,
+    s.sifat,
+    sl.tgl_surat,
+    j.jenis_surat,
+    v.id_status,
+    sl.tembusan,
+    sl.filex,
+    tw.id_template_wil,
+    tw.id_wilayah
+    ORDER BY sl.created_at");
+
+    $users = $query->getRow();
+    $sifat = $M_sifat->findAll();
+
+    $data = [
+      'title' => 'Surat Keluar',
+      'suker' => $users,
+      'sifat' => $sifat
+    ];
+
+
+    // dd($data);
+    return view('public/lldikti/suratkeluarform/ubahsuratkeluarl', $data);
+  }
+
+
+
   // SIMPAN DARI SURAT KELUAR PTS
 
-  public function save()
+  public function simpanSuker()
   {
 
     $userId = idUser();
     $file = $this->request->getFile('filex');
     // Validasi jenis file
-    if ($file->isValid() && !$file->hasMoved() && in_array($file->getExtension(), ['pdf', 'jpg', 'jpeg', 'png'])) {
+    if ($file->isValid() && !$file->hasMoved() && in_array($file->getExtension(), ['pdf', 'jpg', 'jpeg'])) {
       $doc = $file->getRandomName();
 
       if ($file->move('./assets/document/', $doc)) {
         $data = [
           'id_surat' => auto_uuid(),
-          'nomor_surat' => $this->request->getPost('nomor_surat'),
-          'id_sifat' => $this->request->getPost('id_sifat'),
           'tgl_surat' => date('Y-m-d'), // Menggunakan format tanggal yang sesuai
           'id_jenis_surat' => '1',
           'is_active' => '0',
-          'id_instansi' => "782909e8-09b4-11ee-8c85-503eaa456e2a",
-          'tembusan' => $this->request->getPost('tembusan'),
+          'created_by' => $userId,
+          'stts_confirm' => '0',
+          'id_instansi' => idInstansi(),
           'filex' => $doc,
+          'nomor_surat' => $this->request->getPost('nomor_surat'),
+          'id_sifat' => $this->request->getPost('id_sifat'),
+          'tembusan' => $this->request->getPost('tembusan'),
           'id_pegawai' => $this->request->getPost('id_pegawai'),
           'perihal' => $this->request->getPost('perihal'),
-          'created_by' => $userId,
-          'stts_confirm' => '0'
         ];
 
         $M_surat = new M_surat();
@@ -151,7 +250,44 @@ class Surat_keluarl extends BaseController
         return $file->getErrorString();
       }
     } else {
-      return redirect()->to('/suratkeluarl')->with('gagal', "Jenis file yang diunggah tidak valid. Hanya file PDF, JPG, JPEG, dan PNG yang diperbolehkan.");
+      return redirect()->to('/formTambahSuker')->with('gagal', "Jenis file yang diunggah tidak valid. Hanya file PDF, JPG, dan JPEG yang diperbolehkan.");
+    }
+  }
+
+  public function updateSuker($id)
+  {
+
+    $userId = idUser();
+    $file = $this->request->getFile('filex');
+    // Validasi jenis file
+    if ($file->isValid() && !$file->hasMoved() && in_array($file->getExtension(), ['pdf', 'jpg', 'jpeg'])) {
+      $doc = $file->getRandomName();
+
+      if ($file->move('./assets/document/', $doc)) {
+        $data = [
+          'tgl_surat' => date('Y-m-d'),
+          'id_jenis_surat' => '1',
+          'is_active' => '0',
+          'created_by' => $userId,
+          'stts_confirm' => '0',
+          'filex' => $doc,
+          'id_instansi' => idInstansi(),
+          'nomor_surat' => $this->request->getPost('nomor_surat'),
+          'id_sifat' => $this->request->getPost('id_sifat'),
+          'tembusan' => $this->request->getPost('tembusan'),
+          'id_pegawai' => $this->request->getPost('id_pegawai'),
+          'perihal' => $this->request->getPost('perihal')
+        ];
+
+        $M_surat = new M_surat();
+        $M_surat->updateSurat($id, $data);
+
+        return redirect()->to('/suratkeluarl')->with('success', "SUKSES");
+      } else {
+        return $file->getErrorString();
+      }
+    } else {
+      return redirect()->to('/formUbahSukerl/' . $id)->with('gagal', "Jenis file yang diunggah tidak valid. Hanya file PDF, JPG, dan JPEG yang diperbolehkan.");
     }
   }
 

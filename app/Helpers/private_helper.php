@@ -88,3 +88,95 @@ if (!function_exists('dataPersonal')) {
         return null;
     }
 }
+
+if (!function_exists('verifikator')) {
+    function verifikator()
+    {
+        $db = db_connect();
+        $idp = idPegawai();
+        $verifikator = $db->query("SELECT v.id_surat_tugas,count(v.id_surat_tugas) as jum_surat,
+        CASE 
+           WHEN COUNT(DISTINCT(v.verifikator)) = 1 THEN MAX(v.verifikator)
+           ELSE GROUP_CONCAT(v.verifikator SEPARATOR ',')
+        END AS verifikator,
+        COUNT(v.verifikator) AS jumlah_verifikator
+ FROM t_surat_tugas v
+ ,v_pegawai p 
+ WHERE FIND_IN_SET(p.id_pegawai, v.verifikator) and
+ FIND_IN_SET('" . $idp . "', v.verifikator)
+ GROUP BY v.id_surat_tugas
+ ORDER BY v.id_surat_tugas")->getRow();
+        if ($verifikator) {
+            return $verifikator;
+        }
+        return null;
+    }
+}
+
+
+if (!function_exists('dataVerifikator')) {
+    function dataVerifikator()
+    {
+        $db = db_connect();
+        $dverif = $db->query("SELECT v.id_surat_tugas,
+        CASE 
+           WHEN COUNT(DISTINCT(v.verifikator)) = 1 THEN MAX(v.verifikator)
+           ELSE GROUP_CONCAT(v.verifikator SEPARATOR ',')
+        END AS verifikator,
+        COUNT(v.verifikator) AS jumlah_verifikator
+ FROM t_surat_tugas v
+ INNER JOIN v_pegawai p ON FIND_IN_SET(p.id_pegawai, v.verifikator)
+ GROUP BY v.id_surat_tugas
+ ORDER BY v.id_surat_tugas")->getRow();
+        if ($dverif) {
+            return $dverif;
+        }
+        return null;
+    }
+}
+
+
+if (!function_exists('t_verifikasi')) {
+    function t_verifikasi()
+    {
+        $db = db_connect();
+        $data = $db->query("select v.*,u.username from users u 
+        ,t_verifikasi v 
+        where v.id_user=u.id")->getRow();
+        if ($data) {
+            return $data;
+        }
+        return null;
+    }
+}
+
+if (!function_exists('uprov')) {
+    function uprov()
+    {
+        $idu = idUser();
+        $db = db_connect();
+        $data = $db->query("select v.*,u.username from users u 
+        ,t_verifikasi v 
+        where v.id_user=u.id and v.id_user='" . $idu . "'")->getRow();
+        if ($data) {
+            return $data;
+        }
+        return null;
+    }
+}
+
+
+if (!function_exists('notifSurat')) {
+    function notifSurat()
+    {
+        $idu = idUser();
+        $db = db_connect();
+        $data = $db->query("select v.*,u.username from users u 
+        ,t_verifikasi v 
+        where v.id_user=u.id and v.id_user='" . $idu . "'")->getRow();
+        if ($data) {
+            return $data;
+        }
+        return null;
+    }
+}

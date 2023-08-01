@@ -11,7 +11,6 @@
     <title><?= $title; ?></title>
 
 
-
     <!-- Custom fonts for this template -->
     <link href="<?= base_url('assets/'); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -41,77 +40,6 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
 
-        <!-- Sidebar -->
-        <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #11009E;">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-                <div class="sidebar-brand-icon">
-                    <i class="fas fa-envelope"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">SISURAT</div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-
-            <?php
-            // Assuming you have loaded the Myth/Auth library and the user is logged in
-
-            use App\Models\M_akses_menu;
-            use App\Models\M_jenis_surat;
-            use App\Models\M_menu;
-            use App\Models\M_submenu;
-            // ...
-
-            $m_menu = new M_menu();
-            $m_sub = new M_submenu();
-            $m_akses = new M_akses_menu();
-            $m_jenissurat = new M_jenis_surat();
-
-            $menu = $m_menu->findAll();
-            $sub = $m_sub->findAll();
-            $aksesmenus = $m_akses->findAll();
-            $jenis_surat = $m_jenissurat->findAll();
-
-            ?>
-
-            <?php foreach ($menu as $m) {
-                $submenus = $m_sub->where('id_menu', $m['id_menu'])->findAll();
-            ?>
-                <?php foreach ($submenus as $sm) {
-                    $url = base_url($sm['url']);
-                    $isActive = ($title == $sm['title']);
-                ?>
-                        <li class="nav-item <?= ($isActive ? 'active' : '') ?>">
-                            <a class="nav-link" href="<?= $sm['url']; ?>">
-                                <i class="fas fa-fw fa-<?= $sm['icon']; ?>"></i>
-                                <span><?= $m['menu']; ?></span>
-                                <span class="badge float-right badge-danger" id="countNotiflldiktiMasuk"></span>
-                            </a>
-                        </li>
-            <?php
-                    }
-                
-            } ?>
-
-
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-        </ul>
-        <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
@@ -122,24 +50,66 @@
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-
-
-
+                    <?php $verifikator = verifikator();
+                    if ($verifikator) {
+                        $url = base_url('surattugas/');
+                        $jumlah = $verifikator->jum_surat;
+                    } else {
+                        $url = '#';
+                        $jumlah = null;
+                    }
+                    ?>
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
                         <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $nl ?? '' ?></span>
-                                <img class="img-profile rounded-circle" src="<?= base_url('assets/img/'); ?><?= $pf ?? ''; ?>" width="50%">
+                                <i class="far fa-bell"></i>
+                                <span class="badge badge-danger navbar-badge"><?= $jumlah; ?></span>
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+
+
+                                <span class="dropdown-item dropdown-header">2 Pemberitahuan</span>
+                                <!-- <div class="dropdown-divider"></div> -->
+                                <!-- <a href="<= $url; ?>" class="dropdown-item">
+                                    <i class="fas fa-envelope mr-2"></i> 1 Surat Masuk
+                                    <span class="float-right text-muted text-sm">3 mins</span>
+                                </a> -->
+
+                                <?php if ($jumlah != null) { ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="" class="dropdown-item">
+                                        <i class="fas fa-users mr-2"></i> <?= $jumlah; ?> Meminta Verifikasi SPT
+                                        <span class="float-right text-muted text-sm">12 hours</span>
+                                    </a>
+                                <?php } ?>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item dropdown-footer">Lihat Semua</a>
+                            </div>
+                        </li>
+
+
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+                                    <?php
+                                    if (empty(dataPersonal()->nama_lengkap)) {
+                                        $nama = user()->username;
+                                    } else {
+                                        $nama = dataPersonal()->nama_lengkap;
+                                    }
+                                    ?>
+                                    <?= $nama; ?>
+                                </span>
+                                <img class="img-profile rounded-circle" src="<?= base_url('assets/img/'); ?><?= user()->user_image; ?>" width="50%">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" data-toggle="modal" data-target="#profile">
+                                <a class="dropdown-item" href="<?= base_url('profile'); ?>">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>
@@ -166,7 +136,6 @@
 
 
                 <?= $this->renderSection('content'); ?>
-
 
             </div>
             <!-- End of Main Content -->
@@ -254,12 +223,23 @@
     <!-- Custom scripts for all pages-->
     <script src="<?= base_url('assets/'); ?>js/sb-admin-2.min.js"></script>
 
+    <script>
+        $(function() {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+
+
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script> -->
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+
     <!-- Page level plugins -->
-    <script src="<?= base_url('assets/'); ?>vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="<?= base_url('assets/'); ?>vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <!-- <script src="<?= base_url('assets/'); ?>vendor/datatables/jquery.dataTables.min.js"></script> -->
+    <!-- <script src="<?= base_url('assets/'); ?>vendor/datatables/dataTables.bootstrap4.min.js"></script> -->
 
     <!-- Page level custom scripts -->
-    <script src="<?= base_url('assets/'); ?>js/demo/datatables-demo.js"></script>
+    <!-- <script src="<?= base_url('assets/'); ?>js/demo/datatables-demo.js"></script> -->
 
 
 
@@ -268,11 +248,11 @@
     <script>
         function getCountNotifikasi() {
             $.ajax({
-                url: 'get_notifikasil',
+                url: '<?= base_url('notif'); ?>',
                 type: 'GET',
                 success: function(response) {
-                    // console.log(response);
-                    $('#countNotiflldiktiMasuk').text(response);
+                    console.log(response);
+                    $('#countsumasp').text(response);
                 },
                 error: function(xhr, status, error) {
                     console.error(error);
@@ -280,23 +260,12 @@
             });
         }
 
-        function resetNotifikasi() {
-            $.ajax({
-                url: 'upstatus',
-                type: 'POST',
-                success: function() {
-                    getCountNotifikasi();
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                }
-            });
-        }
+
 
         $(document).ready(function() {
             getCountNotifikasi();
 
-            $('#countNotiflldiktiMasuk').click(function() {
+            $('#countsumasp').click(function() {
                 resetNotifikasi();
             });
         });

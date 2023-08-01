@@ -48,10 +48,11 @@
 
                     <thead>
                         <tr>
-                            <th>From & Sifat</th>
-                            <th>Nomor Surat/Tgl/Tembusan</th>
-                            <th>Disposisi</th>
-                            <th>Aksi</th>
+                            <th>PENGIRIM</th>
+                            <th>NOMOR SURAT/TANGGAL</th>
+                            <th>DISPOSISI</th>
+                            <th class="col-3">STATUS</th>
+                            <th class="col-1">AKSI</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,15 +60,14 @@
 
 
                             <tr>
-                                <td class="col-4">
+                                <td>
                                     <p><?= $s['dari']; ?></p>
-                                    <p><?= $s['sifat']; ?></p>
                                 </td>
-                                <td class="col-5">
+                                <td>
                                     <p><?= $s['nomor_surat'] ?><span class="float-right"><?= $s['tgl_surat'] ?></span></p>
-                                    <p><?= $s['tembusan']; ?></p>
+
                                 </td>
-                                <td class="col-5">
+                                <td>
                                     <div>
                                         <?php
                                         $disposisiFound = false;
@@ -91,6 +91,33 @@
 
 
                                 </td>
+                                <td>
+
+                                    <div class="progress">
+                                        <?php if ($s['id_status'] == 0) : ?>
+                                            <!-- Tahap 1 -->
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="DIPROSES" style="width: 25%">
+                                                <i class="fa fa-random"></i>
+                                            </div>
+                                        <?php elseif ($disposisiFound) : ?>
+                                            <!-- Tahap 2 -->
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="DISPOSISI" style="width: 50%">
+                                                <i class="fa fa-book"></i>
+                                            </div>
+                                        <?php elseif ($s['id_status'] == 10) : ?>
+                                            <!-- Tahap 3 -->
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" data-original-title="DITERUSKAN" style="width: 75%">
+                                                <i class="fa fa-share"></i>
+                                            </div>
+                                        <?php elseif ($s['id_status'] == 11) : ?>
+                                            <!-- Tahap 4 -->
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" data-original-title="DILAPORKAN" style="width: 100%">
+                                                <i class="fa fa-bullhorn"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+
 
                                 <td>
                                     <?php if ($s['id_status'] == 0) : ?>

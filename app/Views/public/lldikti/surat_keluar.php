@@ -10,9 +10,10 @@
         <div class="card-header py-3">
             <div class="d-flex justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Surat Keluar</h6>
-                <a type="button" data-toggle="modal" class="btn btn-primary" data-target="#addModal">
+                <a href="<?= base_url('formTambahSukerl'); ?>" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Tambah
                 </a>
+             
             </div>
         </div>
 
@@ -24,11 +25,11 @@
                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
 
                     <thead>
-                        <tr>
-                            <th>Send To & Sifat</th>
-                            <th>Nomor Surat/Tgl/perihal</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
+                        <tr class="bg-dark text-white">
+                            <th>KEPADA</th>
+                            <th>NOMOR SURAT/TANGGAL/PERIHAL</th>
+                            <th>STATUS</th>
+                            <th>AKSI</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,43 +39,63 @@
 
                                     <?php if ($s['id_sur'] !== $s['id_surat']) { ?>
                                         <p>
-                                            <span><button class="badge btn-primary" data-toggle="modal" data-target="#id_sendtoarray<?= $s['id_surat'] ?>"><i class="fas fa-share"></i> Kirim Ke Pts</button></span>
+                                            <span><button class="badge btn-primary" data-toggle="modal" data-target="#id_sendtoarray<?= $s['id_surat'] ?>"><i class="fas fa-share"></i> Kirim Ke PTS</button></span>
                                         </p>
                                         <p>
-                                            <button class="badge btn-primary" data-toggle="modal" data-target="#id_sendtogrup<?= $s['id_surat'] ?>"><i class="fas fa-share"></i> Kirim Ke Wilayah</button>
+                                            <button class="badge btn-primary" data-toggle="modal" data-target="#id_sendtogrup<?= $s['id_surat'] ?>"><i class="fas fa-share"></i> Kirim Ke Wilayah PTS</button>
                                         </p>
 
                                     <?php } elseif ($s['id_sur'] === $s['id_surat'] && !empty($s['id_template_wil'])) { ?>
                                         <a type="button" class="badge badge-success"><i class="fas fa-check"></i><i class="fas fa-check"></i> Dikirim Ke PTS</a>
                                     <?php } elseif ($s['id_sur'] === $s['id_surat'] && !empty($s['id_wilayah'])) { ?>
-                                        <a type="button" class="badge badge-success"><i class="fas fa-check"></i><i class="fas fa-check"></i> Dikirim Ke Grup PTS</a>
+                                        <a type="button" class="badge badge-success"><i class="fas fa-check"></i><i class="fas fa-check"></i> Dikirim Ke Wilayah PTS</a>
                                     <?php } ?>
-
-                                    <p><?= $s['sifat']; ?></p>
                                 </td>
 
                                 <td class="col-5">
-                                    <p><?= $s['nomor_surat'] ?><span class="float-right"><?= $s['tgl_surat'] ?></span></p>
-                                    <p><?= $s['perihal']; ?></p>
+                                    <p><i class="fas fa-envelope"></i> <?= $s['nomor_surat'] ?><span class="float-right"><?= $s['tgl_surat'] ?></span></p>
+                                    <p><?= $s['perihal']; ?>
+                                        <span class="float-right">
+                                            <?php if ($s['stts_confirm'] == 1) { ?>
+                                                <a type="button" class="badge btn-success">
+                                                    <i class="fas fa-success"></i> Terkirim
+                                                </a>
+                                            <?php } else { ?>
+                                                <a type="button" class="badge btn-danger">
+                                                    <i class="fas fa-times"></i> Dipending
+                                                </a>
+                                            <?php } ?>
+                                        </span>
+                                    </p>
                                 </td>
 
                                 <td class="col-5">
-                                    <?php if (!empty($s['dilihat_oleh'])) { ?>
-                                        <a type="button" class="badge badge-success"><i class="fas fa-check"> </i> Dibaca</a>
-                                    <?php } elseif ($s['stts_confirm'] == '1') { ?>
-                                        <a type="button" class="badge badge-success"><i class="fas fa-check"> </i> Terkirim</a>
-                                    <?php } elseif ($s['stts_confirm'] == '2') { ?>
-                                        <a type="button" class="badge badge-warning"><i class="fas fa-clock"> </i> Pending</a>
-                                    <?php } else { ?>
-                                        <a type="button" class="badge badge-warning"><i class="fas fa-clock"> </i> Belum Terkirim</a>
-                                    <?php } ?>
+                                    <div class="progress">
+                                        <?php if (!empty($s['dilihat_oleh'])) { ?>
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="DIBACA" style="width: 100%">
+                                                <i class="fa fa-eye"></i>
+                                            </div>
+                                        <?php } elseif ($s['stts_confirm'] == '2') { ?>
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="PENDING" style="width: 25%">
+                                                <i class="fa fa-clock"></i>
+                                            </div>
+                                        <?php } else { ?>
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="Proses" style="width: 10%">
+                                                <i class="fa fa-random"></i>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
                                 </td>
 
                                 <td>
                                     <?php if ($s['created_by'] != idUser()) { ?>
                                         <a type="button" data-toggle="modal" class="badge btn-success btn-lihat" data-target="#detailModal<?= $s['id_surat']; ?>" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
+
                                     <?php } else { ?>
                                         <a type="button" data-toggle="modal" class="badge btn-success" data-target="#detailModal<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
+                                        <?php if ($s['id_status'] == 0) : ?>
+                                            <a href="<?= base_url('formUbahSukerl/' . $s['id_surat']); ?>" class="badge badge-warning"><i class="fas fa-edit"></i> Ubah Surat</a>
+                                        <?php endif ?>
                                     <?php } ?>
 
                                     <a type="button" data-toggle="modal" class="badge btn-success" data-target="#detailKirim<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat Riwayat Kirim</a>
@@ -86,15 +107,8 @@
                                             <a type="button" data-toggle="modal" class="badge btn-info" data-target="#konfirmasiKirim<?= $s['id_surat']; ?>">
                                                 <i class="fas fa-clock"></i> Konfirmasi Kirim
                                             </a>
+                                            <a href="<?= base_url('formUbahSukerl/' . $s['id_surat']); ?>" class="badge badge-warning"><i class="fas fa-edit"></i> Ubah Surat</a>
                                         <?php endif; ?>
-                                    <?php } elseif ($s['stts_confirm'] == 1) { ?>
-                                        <a type="button" class="badge btn-success">
-                                            <i class="fas fa-success"></i> Terkirim
-                                        </a>
-                                    <?php } else { ?>
-                                        <a type="button" class="badge btn-danger">
-                                            <i class="fas fa-times"></i> Dipending
-                                        </a>
                                     <?php } ?>
                                 </td>
                             </tr>
@@ -108,58 +122,6 @@
 </div>
 
 
-<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content p-2">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addModalLabel">Add Surat Keluar</h5>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="<?= base_url('savesukerl'); ?>" method="post" enctype="multipart/form-data">
-                <div class="modal-body">
-
-                    <div class="row form-group">
-                        <label for="">Nomor Surat</label>
-                        <input type="hidden" name="id_instansi" id="" value="<?= idInstansi(); ?>" class="form-control">
-                        <input type="text" name="nomor_surat" id="" placeholder="Nomor Surat" class="form-control" required>
-                    </div>
-                    <div class="row form-group">
-                        <label for="">perihal</label>
-                        <input type="text" name="perihal" id="" placeholder="Perihal" class="form-control" required>
-                    </div>
-                    <div class="row form-group">
-                        <label for="">Tembusan</label>
-                        <input type="text" name="tembusan" id="" class="form-control" placeholder="">
-                    </div>
-                    <div class="row form-group">
-                        <label for="">Sifat</label>
-                        <select name="id_sifat" id="" class="form-control">
-                            <option value="">--PILIH--</option>
-                            <?php foreach ($sifat as $si) { ?>
-                                <option value="<?= $si['id_sifat']; ?>"><?= $si['sifat']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-
-                    <div class="row form-group">
-                        <label for="">Dokumen</label>
-                        <input type="hidden" name="id_surat" id="">
-                        <input type="file" name="filex" id="" class="form-control-file">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-            </form>
-        </div>
-    </div>
-</div>
-</div>
-
 
 <?php foreach ($suker as $s) : ?>
     <!-- Modal Tambah Menu -->
@@ -167,7 +129,7 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailModalLabel">Nomor Surat : <?= $s['nomor_surat']; ?></h5>
+                    <h5 class="modal-title" id="detailModalLabel">Nomor Surat : <i class="fas fa-envelope"></i> <?= $s['nomor_surat']; ?></h5>
 
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -198,7 +160,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailModalLabel">Riwayat : <?= $s['nomor_surat']; ?></h5>
+                    <h5 class="modal-title" id="detailModalLabel">PEMBACA : <i class="fas fa-envelope"></i> <?= $s['nomor_surat']; ?></h5>
 
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -211,8 +173,8 @@
 
                             <thead>
                                 <tr>
-                                    <th>perihal</th>
-                                    <th>Status Dilihat</th>
+                                    <th>PERIHAL</th>
+                                    <th>DIBACA OLEH</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -258,7 +220,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailModalLabel">Kirim Surat Nomor: <?= $s['nomor_surat']; ?></h5>
+                    <h5 class="modal-title" id="detailModalLabel">Surat Nomor: <i class="fas fa-envelope"></i> <?= $s['nomor_surat']; ?></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -295,7 +257,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailModalLabel">Kirim Surat Nomor: <?= $s['nomor_surat']; ?></h5>
+                    <h5 class="modal-title" id="detailModalLabel">Surat Nomor: <?= $s['nomor_surat']; ?></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -331,7 +293,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailModalLabel">Konfirmasi Kirim <span><?= $s['nomor_surat']; ?></span></h5>
+                    <h5 class="modal-title" id="detailModalLabel">Konfirmasi Kirim :<span> <i class="fas fa-envelope"></i><?= $s['nomor_surat']; ?></span></h5>
 
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -340,8 +302,8 @@
                 <div class="modal-body mx-auto">
                     <form action="<?= base_url('konfirKirim/' . $s['id_surat']); ?>" method="post">
                         <div class="">
-                            <button name="stts" value="1" class="badge badge-success">Lanjutkan Kirim</button>
-                            <button name="stts" value="2" class="badge badge-danger">Batalkan Kirim</button>
+                            <button name="stts" value="2" class="btn btn-danger">Batal</button>
+                            <button name="stts" value="1" class="btn btn-success">Kirim</button>
                         </div>
                     </form>
                 </div>
