@@ -230,20 +230,6 @@
     </script>
 
 
-    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script> -->
-    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
-
-    <!-- Page level plugins -->
-    <!-- <script src="<?= base_url('assets/'); ?>vendor/datatables/jquery.dataTables.min.js"></script> -->
-    <!-- <script src="<?= base_url('assets/'); ?>vendor/datatables/dataTables.bootstrap4.min.js"></script> -->
-
-    <!-- Page level custom scripts -->
-    <!-- <script src="<?= base_url('assets/'); ?>js/demo/datatables-demo.js"></script> -->
-
-
-
-
     <!-- Tambahkan JavaScript untuk mengirim permintaan Ajax dan memperbarui angka notifikasi -->
     <script>
         function getCountNotifikasi() {
@@ -270,73 +256,6 @@
             });
         });
     </script>
-
-
-
-    <!-- <script>
-    $(document).ready(function() {
-        $('#kodeajax').ready(function() {
-            var kode = $(this).val();
-            $.ajax({
-                url: '<= base_url('getKodeSurat'); ?>', // Ganti dengan URL ke fungsi searchKodeSurat() di Controller Anda
-                method: 'GET', // Metode permintaan harus sesuai dengan fungsi di Controller Anda
-                dataType: 'json',
-                data: {
-                    keyword: kode
-                },
-                success: function(response) {
-                    // Berikan data yang diterima ke elemen select yang sesuai
-                    $('#kodeajax').empty(); // Kosongkan elemen select sebelum mengisi dengan opsi baru
-                    $('#kodeajax').append('<option value="">--PILIH KODE SURAT--</option>');
-                    $.each(response, function(index, data) {
-                        $('#kodeajax').append('<option value="' + data.nomor_surat + '">' + data.nomor_surat + ' - ' + data.perihal + '</option>');
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText); // Tampilkan pesan error jika permintaan gagal
-                }
-            });
-        });
-
-    });
-    // Inisialisasi Select2 pada elemen select
-    $('#kodeajax').select2({
-        placeholder: "PILIH CARI",
-        theme: "bootstrap-4"
-    })
-</script> -->
-
-    <!-- <script>
-        $('.custom-file-input').on('change', function() {
-            let fileName = $(this).val().split('\\').pop();
-            $(this).next('.custom-file-label').addClass("selected").html(fileName);
-        });
-
-
-
-        $('.form-check-input').on('click', function() {
-            const id_menu = $(this).data('menu');
-            const id_level = $(this).data('level');
-
-            $.ajax({
-                url: "<= base_url('ubahAkses'); ?>",
-                type: 'post',
-                data: {
-                    id_menu: id_menu,
-                    id_level: id_level
-                },
-                success: function() {
-                    document.location.href = "<= base_url('Akses'); ?>" + id_level;
-                }
-            });
-
-        });
-    </script> -->
-
-
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-
-
 
 
 </body>

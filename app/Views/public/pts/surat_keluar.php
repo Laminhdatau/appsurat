@@ -44,17 +44,20 @@
                             <tr>
                                 <td class="col-3">
                                     <p><?= $s['lldikti']; ?>
-                                        <?php if (empty($status)) { ?>
+                                        <?php if (empty($status)) : ?>
                                             <span class="float-right text-primary">
                                                 <i class="fas fa-random"></i> Diproses
-                                            <?php } elseif (in_array('4', $statusArray)) { ?>
-                                                <span class="float-right text-danger">
-                                                    <i class="fas fa-clock"></i> Dipending
-                                                <?php } elseif (in_array('8', $statusArray)) { ?>
-                                                    <span class="float-right text-success">
-                                                        <i class="fas fa-check"></i><i class="fas fa-check"></i> Terkirim
-                                                    <?php } ?>
-                                                    </span>
+                                            </span>
+                                        <?php elseif (in_array('4', $statusArray) && in_array('8', $statusArray)) : ?>
+                                            <span class="float-right text-success">
+                                                <i class="fas fa-check"></i> Terkirim
+                                            </span>
+                                        <?php elseif (in_array('4', $statusArray)) : ?>
+                                            <span class="float-right text-danger">
+                                                <i class="fas fa-clock"></i> Dipending
+                                            </span>
+                                        <?php endif; ?>
+
                                     </p>
                                     <p><?= $s['sifat']; ?></p>
                                 </td>
@@ -80,9 +83,9 @@
                                         </a>
                                     <?php endif; ?>
 
-
-                                    <button class="badge badge-danger" data-toggle="modal" data-target="#deleteSurat<?= $s['id_surat']; ?>"><i class="fas fa-trash"></i> Hapus</button>
-
+                                    <?php if (!in_array('8', $statusArray)) : ?>
+                                        <button class="badge badge-danger" data-toggle="modal" data-target="#deleteSurat<?= $s['id_surat']; ?>"><i class="fas fa-trash"></i> Hapus</button>
+                                    <?php endif ?>
                                 </td>
 
                             </tr>

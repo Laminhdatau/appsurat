@@ -78,7 +78,7 @@
                                     <?php if (in_array(idUser(), $userArray)) : ?>
                                         <a type="button" class="badge btn-dark"><i class="fas fa-check"></i> Terkonfirmasi</a>
                                     <?php else : ?>
-                                        <a type="button" class="badge btn-success btn-konfirmasi" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-check"></i> Konfirmasi</a>
+                                        <a type="button" class="badge btn-success btn-konfirmasi<?= $s['id_surat'] ?>" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-check"></i> Konfirmasi</a>
                                     <?php endif; ?>
 
                                 </td>
@@ -98,33 +98,37 @@
 
 
 <script>
-    $(document).ready(function() {
-        // Fungsi untuk menangani klik tombol konfirmasi
-        $('.btn-konfirmasi').click(function() {
-            var idSurat = $(this).data('id');
-            var button = $(this);
+    <?php foreach ($sumas as $s) : ?>
+        $(document).ready(function() {
+            // Fungsi untuk menangani klik tombol konfirmasi
+            $('.btn-konfirmasi<?= $s['id_surat'] ?>').click(function() {
+                var idSurat = $(this).data('id');
+                var button = $(this);
 
-            // Kirim permintaan AJAX ke server
-            $.ajax({
-                url: '<?= base_url('konfirmasidis/') ?>',
-                type: 'post',
-                data: {
-                    id_surat: idSurat
-                },
-                success: function(response) {
-                    console.log(response);
-                    button.removeClass('badge btn-success').addClass('badge btn-dark');
-                    button.html('<i class="fas fa-check"></i> Terkonfirmasi');
-                },
-                error: function(xhr, status, error) {
-                    console.log(xhr.responseText);
-                    console.log('Terjadi kesalahan. Silakan coba lagi.');
-                }
+                console.log(idSurat);
 
+                // Kirim permintaan AJAX ke server
+                $.ajax({
+                    url: '<?= base_url('konfirmasidis/') ?>',
+                    type: 'post',
+                    data: {
+                        id_surat: idSurat
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        button.removeClass('badge btn-success').addClass('badge btn-dark');
+                        button.html('<i class="fas fa-check"></i> Terkonfirmasi');
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                        console.log('Terjadi kesalahan. Silakan coba lagi.');
+                    }
+
+                });
+                // location.reload();
             });
-            location.reload();
         });
-    });
+    <?php endforeach; ?>
 </script>
 
 <?= $this->endSection(); ?>

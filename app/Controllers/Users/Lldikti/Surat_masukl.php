@@ -106,6 +106,95 @@ class Surat_masukl extends BaseController
 
 
 
+  public function formDisposisi($id_surat)
+  {
+    $M_surat = new M_surat();
+    $query = $M_surat->query("SELECT
+    sl.id_surat,
+    sl.perihal,
+    sl.nomor_surat,
+    s.sifat,
+    sl.tgl_surat,
+    j.jenis_surat,
+    i.nm_instansi AS dari,
+    GROUP_CONCAT(DISTINCT a.id_instansi ORDER BY a.id_instansi SEPARATOR ', ') AS id_untuk,
+    GROUP_CONCAT(DISTINCT a.nm_instansi ORDER BY a.nm_instansi SEPARATOR ', ') AS untuk,
+
+    sl.tembusan,
+    sl.filex,
+    sl.is_active,
+    GROUP_CONCAT(DISTINCT v.id_status SEPARATOR ',')as id_status
+  FROM
+    t_surat sl
+  LEFT JOIN
+    t_instansi i ON sl.id_instansi = i.id_instansi
+  LEFT JOIN
+    t_instansi a ON FIND_IN_SET(a.id_instansi, sl.id_sendto)
+  JOIN
+    t_sifat s ON sl.id_sifat = s.id_sifat
+  JOIN
+    t_jenis_surat j ON sl.id_jenis_surat = j.id_jenis_surat
+  LEFT JOIN
+    t_verifikasi v ON v.id_surat = sl.id_surat
+    left join t_status st on FIND_IN_SET(st.id_status,v.id_status)
+  WHERE
+    sl.id_jenis_surat in (3) and
+    sl.is_active in (1) and sl.id_surat='" . $id_surat . "'
+  GROUP BY
+    sl.id_surat,
+    sl.perihal,
+    sl.nomor_surat,
+    s.sifat,
+    sl.tgl_surat,
+    j.jenis_surat,
+    i.nm_instansi,
+    sl.tembusan,
+    sl.filex;");
+
+    $M_disposisi = new M_disposisi();
+    $dislldikti = $M_disposisi->query("SELECT s.id_surat_dispos, GROUP_CONCAT(s.id_pegawai_tujuan SEPARATOR '<br>') as id_tujuan, ll.nomor_surat AS nos,j.id_jenis_surat, GROUP_CONCAT(p.nama_lengkap SEPARATOR '<br>') AS nama_lengkap,s.tanggal_disposisi
+        FROM db_persuratan.t_disposisi s
+        LEFT JOIN db_persuratan.t_surat ll ON ll.id_surat = s.id_surat_dispos
+        JOIN db_persuratan.t_jenis_surat j ON j.id_jenis_surat = s.id_jenis_surat
+        JOIN db_pegawai.t_pegawai p ON FIND_IN_SET(p.id_pegawai, s.id_pegawai_tujuan) > 0
+        WHERE j.id_jenis_surat = 3
+        GROUP BY s.id_surat_dispos,s.tanggal_disposisi
+        ORDER BY s.id_surat_dispos;");
+
+    $users = $query->getRow();
+    $disposll = $dislldikti->getResultArray();
+
+    $m_pegawai = new M_pegawai();
+    $daftarPegawai = $m_pegawai->findAll();
+
+
+    $daftarPegawaiFiltered = array_filter($daftarPegawai, function ($pegawai) {
+      return $pegawai['id_pegawai'] != idPegawai();
+    });
+
+    $daftarPegawaiFiltered = array_values($daftarPegawaiFiltered);
+
+    $m_instruksi = new M_instruksi();
+    $inst = $m_instruksi->findAll();
+
+
+
+
+    $data = [
+      'title' => 'Surat Masuk',
+      'sumas' => $users,
+      'disposll' => $disposll,
+      'instruksi' => $inst,
+      'daftarPegawai' => $daftarPegawaiFiltered,
+    ];
+
+
+    return view('public/lldikti/disposisiForm/disposisi', $data);
+  }
+
+
+
+
 
   public function delete($id)
   {
@@ -139,29 +228,45 @@ class Surat_masukl extends BaseController
     $id = $this->request->getPost('id_surat');
     $pegawai = $this->request->getPost('daftarpegawai');
     $instruksi = $this->request->getPost('instruksi');
-    $pegawaiString = implode(",", $pegawai);
-    $instrukString = implode(",", $instruksi);
+
+    if ($pegawai === null) {
+      $pegawaiString = null;
+    } else {
+      $pegawaiString = implode(",", $pegawai);
+    }
+
+    if ($instruksi === null) {
+      $instrukString = null;
+    } else {
+      $instrukString = implode(",", $instruksi);
+    }
+
+    if ($pegawaiString !== null && $instrukString !== null) {
+
+      $data = [
+        'id_surat_dispos' => $id,
+        'id_instruksi' => $instrukString,
+        'id_pegawai_tujuan' => $pegawaiString,
+        'user_id' => $userId,
+        'id_jenis_surat' => 3
+      ];
+
+      $disposisiModel->createdisposisi($data);
+
+      $verif = [
+        'id_surat' => $id,
+        'id_user' => $userId,
+        'id_status' => '11'
+      ];
+      $m_verif->createVerifikasi($verif);
 
 
-    $data = [
-      'id_surat_dispos' => $id,
-      'id_instruksi' => $instrukString,
-      'id_pegawai_tujuan' => $pegawaiString,
-      'user_id' => $userId,
-      'id_jenis_surat' => 3
-    ];
+      return redirect()->to('/suratmasukl')->with('success', 'Disposisi berhasil dilakukan.');
 
-    $disposisiModel->createdisposisi($data);
+    } else {
+      return redirect()->to('/formDisposisi/' . $id)->with('error', 'Disposisi gagal dilakukan. harap centang instruksi');
 
-    $verif = [
-      'id_surat' => $id,
-      'id_user' => $userId,
-      'id_status' => '11'
-    ];
-    $m_verif->createVerifikasi($verif);
-
-
-    return redirect()->to('/suratmasukl')->with('success', "SUKSES");
+    }
   }
 
 
@@ -171,7 +276,7 @@ class Surat_masukl extends BaseController
 
     $M_surat = new M_surat();
 
-    
+
 
 
     $query = $M_surat->query("SELECT
@@ -207,7 +312,7 @@ class Surat_masukl extends BaseController
     left join t_status st on FIND_IN_SET(st.id_status,v.id_status)
     LEFT JOIN t_disposisi d on d.id_surat_dispos=sl.id_surat
     LEFT JOIN t_instruksi ins ON FIND_IN_SET(ins.id_instruksi,d.id_instruksi)
-    JOIN v_pegawai p on FIND_IN_SET(p.id_pegawai,d.id_pegawai_tujuan) and FIND_IN_SET('".idPegawai()."',d.id_pegawai_tujuan)
+    JOIN v_pegawai p on FIND_IN_SET(p.id_pegawai,d.id_pegawai_tujuan) and FIND_IN_SET('" . idPegawai() . "',d.id_pegawai_tujuan)
     LEFT JOIN users u on FIND_IN_SET(u.id,v.id_user)
   WHERE
     sl.id_jenis_surat in (3) and

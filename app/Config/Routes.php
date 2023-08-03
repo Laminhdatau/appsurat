@@ -68,9 +68,10 @@ $routes->post('deleteSubMenu', 'Admin\\Submenu::delete', ['filter' => 'role:sumi
 
 $routes->post('konfirmasi', 'Users\\Lldikti\\Surat_masukl::konfirmasi', ['filter' => 'permission:m-skd']);
 
-$routes->post('konfirmasidis', 'Users\\Lldikti\\Surat_masukl::konfirmasidis', ['filter' => 'permission:m-smd']);
+$routes->post('konfirmasidis', 'Users\\Lldikti\\Surat_masukl::konfirmasidis');
 
 $routes->post('disposisill', 'Users\\Lldikti\\Surat_masukl::disposisilldikti', ['filter' => 'permission:m-smd']);
+$routes->get('formDisposisi/(:any)', 'Users\\Lldikti\\Surat_masukl::formDisposisi/$1', ['filter' => 'permission:m-smd']);
 
 
 
