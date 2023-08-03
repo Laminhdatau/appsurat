@@ -19,9 +19,9 @@
 
                     <thead>
                         <tr>
-                            <th>From & Sifat</th>
-                            <th>Nomor Surat/Tgl/Tembusan</th>
-                            <th>Aksi</th>
+                            <th>PENGIRIM</th>
+                            <th>PERIHAL</th>
+                            <th>AKSI</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,16 +30,14 @@
 
                             <tr>
                                 <td class="col-4">
-                                    <p><?= $s['dari']; ?></p>
-                                    <p><?= $s['sifat']; ?></p>
+                                    <p><i class="fas fa-university"></i> <?= $s['dari']; ?></p>
                                 </td>
                                 <td class="col-5">
-                                    <p><?= $s['nomor_surat'] ?><span class="float-right"><?= $s['tgl_surat'] ?></span></p>
-                                    <p><?= $s['tembusan']; ?></p>
+                                    <p><i class="fas fa-envelope"></i><?= $s['nomor_surat'] ?><span class="float-right"><i class="fas fa-calendar"></i><?= $s['tgl_surat'] ?></span></p>
+                                    <p><?= $s['perihal']; ?></p>
                                 </td>
                                 <td>
                                     <a type="button" data-toggle="modal" data-target="#detailModal<?= $s['id_surat']; ?>" class="badge btn-success btn-lihat" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
-
                                 </td>
 
                             </tr>
@@ -62,16 +60,13 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailModalLabel">From : <?= $s['dari']; ?></h5> <br>||
-                    <h5 class="modal-title" id="detailModalLabel">Nomor : <?= $s['nomor_surat']; ?></h5>
+                    <h5 class="modal-title" id="detailModalLabel">NOMOR SURAT : <?= $s['nomor_surat']; ?></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <!-- views/surat/detail.php -->
-
-
                     <?php if ($s['filex']) : ?>
                         <div class="embed-responsive embed-responsive-16by9">
                             <?php if ($s['filex']) : ?>
@@ -97,7 +92,7 @@
         $('.btn-lihat').click(function() {
             var idSurat = $(this).data('id');
             $.ajax({
-                url: '<?= base_url('dilihatoleh/'); ?>' + idSurat,
+                url: '<?= base_url('dilihatolehp/'); ?>' + idSurat,
                 type: 'POST',
                 success: function(response) {
                     console.log(idSurat); // Tampilkan pesan sukses pada konsol

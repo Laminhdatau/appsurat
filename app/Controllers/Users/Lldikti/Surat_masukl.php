@@ -34,7 +34,7 @@ class Surat_masukl extends BaseController
     sl.tembusan,
     sl.filex,
     sl.is_active,
-    GROUP_CONCAT(v.id_status SEPARATOR ',')as id_status
+    GROUP_CONCAT(DISTINCT v.id_status SEPARATOR ',')as id_status
   FROM
     t_surat sl
   LEFT JOIN
@@ -72,9 +72,6 @@ class Surat_masukl extends BaseController
         GROUP BY s.id_surat_dispos,s.tanggal_disposisi
         ORDER BY s.id_surat_dispos;");
 
-
-
-
     $users = $query->getResultArray();
     $disposll = $dislldikti->getResultArray();
 
@@ -83,7 +80,7 @@ class Surat_masukl extends BaseController
 
 
     $daftarPegawaiFiltered = array_filter($daftarPegawai, function ($pegawai) {
-      return $pegawai['id_pegawai'] != 0 && $pegawai['id_pegawai'] != 3;
+      return $pegawai['id_pegawai'] != idPegawai();
     });
 
     $daftarPegawaiFiltered = array_values($daftarPegawaiFiltered);
@@ -164,30 +161,6 @@ class Surat_masukl extends BaseController
     $m_verif->createVerifikasi($verif);
 
 
-    // if ($this->request->getPost('simpan')) {
-    //   $pegawai = $this->request->getPost('daftarpegawai');
-    //   $instruksi = $this->request->getPost('instruksi');
-    //   $pegawaiString = implode(",", $pegawai);
-    //   $instrukString = implode(",", $instruksi);
-
-    //   $data = [
-    //     'id_surat_dispos' => $id,
-    //     'id_instruksi' => $instrukString,
-    //     'id_pegawai_tujuan' => $pegawaiString,
-    //     'user_id' => $userId,
-    //     'id_jenis_surat' => 3
-    //   ];
-
-    //   $disposisiModel->createdisposisi($data);
-
-    //   $verif = [
-    //     'id_surat' => $id,
-    //     'id_user' => $userId,
-    //     'id_status' => '11'
-    //   ];
-    //   $m_verif->createVerifikasi($verif);
-    // }
-
     return redirect()->to('/suratmasukl')->with('success', "SUKSES");
   }
 
@@ -198,7 +171,7 @@ class Surat_masukl extends BaseController
 
     $M_surat = new M_surat();
 
-    $id = idPegawai();
+    
 
 
     $query = $M_surat->query("SELECT
@@ -209,37 +182,37 @@ class Surat_masukl extends BaseController
     sl.tgl_surat,
     j.jenis_surat,
     i.nm_instansi AS dari,
-    GROUP_CONCAT(DISTINCT d.id_instruksi SEPARATOR ', ') AS id_instruksi,
-    GROUP_CONCAT(DISTINCT ins.instruksi SEPARATOR '<br> ') AS instruksi,
-    GROUP_CONCAT(DISTINCT p.id_pegawai SEPARATOR ', ') AS id_pegawai,
-    GROUP_CONCAT(DISTINCT p.nama_lengkap SEPARATOR '<br> ') AS pegawai,
+     sl.tembusan,
+    sl.filex,
+    sl.is_active,
     GROUP_CONCAT(DISTINCT a.id_instansi ORDER BY a.id_instansi SEPARATOR ', ') AS id_untuk,
     GROUP_CONCAT(DISTINCT a.nm_instansi ORDER BY a.nm_instansi SEPARATOR ', ') AS untuk,
-    v.id_status,
-    sl.tembusan,
-    sl.filex,
-    sl.is_active
-FROM
+    GROUP_CONCAT(DISTINCT v.id_status SEPARATOR ',')as id_status,
+    GROUP_CONCAT(DISTINCT v.id_user SEPARATOR ',')as id_user,
+    GROUP_CONCAT(DISTINCT p.id_pegawai SEPARATOR ',')as id_pegawai,
+    GROUP_CONCAT(DISTINCT ins.id_instruksi SEPARATOR ',')as id_instruksi,
+    GROUP_CONCAT(DISTINCT ins.instruksi SEPARATOR '<br>')as instruksi
+  FROM
     t_surat sl
-LEFT JOIN
+  LEFT JOIN
     t_instansi i ON sl.id_instansi = i.id_instansi
-LEFT JOIN
+  LEFT JOIN
     t_instansi a ON FIND_IN_SET(a.id_instansi, sl.id_sendto)
-    LEFT JOIN t_verifikasi v on v.id_surat=sl.id_surat
-JOIN
+  JOIN
     t_sifat s ON sl.id_sifat = s.id_sifat
-JOIN
+  JOIN
     t_jenis_surat j ON sl.id_jenis_surat = j.id_jenis_surat
-LEFT JOIN
-    t_disposisi d ON d.id_surat_dispos = sl.id_surat
-JOIN
-    db_pegawai.t_pegawai p ON FIND_IN_SET(p.id_pegawai, d.id_pegawai_tujuan) AND FIND_IN_SET('" . $id . "',d.id_pegawai_tujuan)
-LEFT JOIN
-    t_instruksi ins ON FIND_IN_SET(ins.id_instruksi, d.id_instruksi)
-WHERE
-    sl.id_jenis_surat = 3 AND
-    sl.is_active = 0
-GROUP BY
+  LEFT JOIN
+    t_verifikasi v ON v.id_surat = sl.id_surat
+    left join t_status st on FIND_IN_SET(st.id_status,v.id_status)
+    LEFT JOIN t_disposisi d on d.id_surat_dispos=sl.id_surat
+    LEFT JOIN t_instruksi ins ON FIND_IN_SET(ins.id_instruksi,d.id_instruksi)
+    JOIN v_pegawai p on FIND_IN_SET(p.id_pegawai,d.id_pegawai_tujuan) and FIND_IN_SET('".idPegawai()."',d.id_pegawai_tujuan)
+    LEFT JOIN users u on FIND_IN_SET(u.id,v.id_user)
+  WHERE
+    sl.id_jenis_surat in (3) and
+    sl.is_active in (1)
+  GROUP BY
     sl.id_surat,
     sl.perihal,
     sl.nomor_surat,
@@ -247,7 +220,6 @@ GROUP BY
     sl.tgl_surat,
     j.jenis_surat,
     i.nm_instansi,
-    v.id_status,
     sl.tembusan,
     sl.filex;");
 
@@ -263,13 +235,8 @@ GROUP BY
     return view('public/lldikti/surat_masukdisposisi', $data);
   }
 
-
-
-
-
   public function konfirmasi()
   {
-
     $M_verif = new M_verifikasi();
     $userId = idUser();
     $id_surat = $this->request->getPost('id_surat');
@@ -285,15 +252,15 @@ GROUP BY
 
   public function konfirmasidis()
   {
-
     $M_verif = new M_verifikasi();
     $userId = idUser();
     $id_surat = $this->request->getPost('id_surat');
     $data = [
+      'id_surat' => $id_surat,
       'id_status' => '10',
       'id_user' => $userId
     ];
-    $M_verif->updateVerifikasi($id_surat, $data);
+    $M_verif->createVerifikasi($data);
     return $this->response->setStatusCode(200)->setBody('Konfirmasi berhasil');
   }
 
@@ -310,7 +277,7 @@ GROUP BY
     ];
     $m_verif->createVerifikasi($dataVer);
 
-    $M_surat->tambahDilihatOleh($idSurat, idPegawai());
+    $M_surat->tambahDilihatOleh($idSurat, user()->email);
     return $this->response->setJSON(['message' => 'Pengguna ditambahkan ke daftar dilihat']);
   }
 }

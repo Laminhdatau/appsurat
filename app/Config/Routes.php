@@ -65,7 +65,8 @@ $routes->post('updateSubMenu', 'Admin\\Submenu::update', ['filter' => 'role:sumi
 $routes->post('deleteSubMenu', 'Admin\\Submenu::delete', ['filter' => 'role:sumin']);
 
 $routes->post('konfirmasi', 'Users\\Lldikti\\Surat_masukl::konfirmasi', ['filter' => 'permission:m-skd']);
-$routes->post('konfirmasidis', 'Users\\Lldikti\\Surat_masukl::konfirmasidis', ['filter' => 'permission:m-skd']);
+
+$routes->post('konfirmasidis', 'Users\\Lldikti\\Surat_masukl::konfirmasidis', ['filter' => 'permission:m-smd']);
 
 $routes->post('disposisill', 'Users\\Lldikti\\Surat_masukl::disposisilldikti', ['filter' => 'permission:m-smd']);
 
@@ -76,7 +77,9 @@ $routes->post('konfirKirim/(:any)', 'Users\\Lldikti\\Surat_keluarl::konfirmasiSe
 
 $routes->post('sendtoinst', 'Users\\Lldikti\\Surat_keluarl::sendToIns', ['filter' => 'permission:m-skd']);
 $routes->post('sendtogrup', 'Users\\Lldikti\\Surat_keluarl::sendAll', ['filter' => 'permission:m-skd']);
-$routes->post('dilihatoleh/(:any)', 'Users\\Lldikti\\Surat_keluarl::dilihatOleh/$1');
+
+$routes->post('dilihatolehp/(:any)', 'Users\\Pts\\Surat_masukp::dilihatOleh/$1', ['filter' => 'permission:m-smpts']);
+$routes->post('dilihatolehl/(:any)', 'Users\\Lldikti\\Surat_masukl::dilihatOleh/$1', ['filter' => 'permission:m-smd']);
 
 
 $routes->get('surattugas', 'Users\\Lldikti\\Surat_tugas::index', ['filter' => 'permission:m-st']);

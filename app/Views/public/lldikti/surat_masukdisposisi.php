@@ -56,7 +56,10 @@
                     </thead>
                     <tbody>
                         <?php foreach ($sumas as $s) : ?>
-
+                            <?php
+                            $user = $s['id_user'];
+                            $userArray = explode(',', $user);
+                            ?>
 
                             <tr>
                                 <td class="col-4">
@@ -72,11 +75,12 @@
                                 </td>
 
                                 <td>
-                                    <?php if ($s['id_status'] == '11') : ?>
-                                        <a type="button" class="badge btn-success btn-konfirmasi" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-check"></i> Konfirmasi</a>
-                                    <?php elseif ($s['id_status'] == '10') : ?>
+                                    <?php if (in_array(idUser(), $userArray)) : ?>
                                         <a type="button" class="badge btn-dark"><i class="fas fa-check"></i> Terkonfirmasi</a>
+                                    <?php else : ?>
+                                        <a type="button" class="badge btn-success btn-konfirmasi" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-check"></i> Konfirmasi</a>
                                     <?php endif; ?>
+
                                 </td>
 
                             </tr>
