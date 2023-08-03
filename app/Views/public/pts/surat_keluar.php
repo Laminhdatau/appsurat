@@ -80,6 +80,9 @@
                                         </a>
                                     <?php endif; ?>
 
+
+                                    <button class="badge badge-danger" data-toggle="modal" data-target="#deleteSurat<?= $s['id_surat']; ?>"><i class="fas fa-trash"></i> Hapus</button>
+
                                 </td>
 
                             </tr>
@@ -183,6 +186,9 @@
 <?php endforeach; ?>
 
 
+
+
+
 <?php foreach ($suker as $s) : ?>
     <!-- Modal Tambah Menu -->
     <div class="modal fade" id="konfirmasiKirim<?= $s['id_surat']; ?>" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
@@ -208,6 +214,41 @@
     </div>
 
 <?php endforeach; ?>
+
+
+
+
+
+<?php foreach ($suker as $s) : ?>
+    <!-- Modal Tambah Menu -->
+    <div class="modal fade" id="deleteSurat<?= $s['id_surat']; ?>" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel"><b class="text-danger"><i class="fas fa-info"></i> Apakah anda yakin ingin menghapus?</b></h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-auto">
+                    <form action="<?= base_url('hapusSuratp/' . $s['id_surat']); ?>" method="post">
+                        <div class="">
+                            <button type="button" class="btn btn-secondary">Batal</button>
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php endforeach; ?>
+
+
+
+
+
 
 
 

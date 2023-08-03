@@ -33,7 +33,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($suker as $s) { ?>
+                        <?php foreach ($suker as $s) {
+
+                            $status = $s['id_status'];
+                            $stArray = explode(',', $status);
+
+
+                        ?>
                             <tr>
                                 <td class="col-4">
 
@@ -84,11 +90,17 @@
                                 <td>
                                     <?php if ($s['created_by'] != idUser()) { ?>
                                         <a type="button" data-toggle="modal" class="badge btn-success btn-lihat" data-target="#detailModal<?= $s['id_surat']; ?>" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
-
                                     <?php } else { ?>
                                         <a type="button" data-toggle="modal" class="badge btn-success" data-target="#detailModal<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
-                                        <?php if ($s['id_status'] == '0') : ?>
+                                        <?php if ($stArray == null) : ?>
                                             <a href="<?= base_url('formUbahSukerl/' . $s['id_surat']); ?>" class="badge badge-warning"><i class="fas fa-edit"></i> Ubah Surat</a>
+                                            <button class="badge badge-danger" data-toggle="modal" data-target="#deleteSurat<?= $s['id_surat']; ?>"><i class="fas fa-trash"></i> Hapus</button>
+                                        <?php endif ?>
+
+
+                                        <?php if (!in_array('8',$stArray)) : ?>
+                                            <a href="<?= base_url('formUbahSukerl/' . $s['id_surat']); ?>" class="badge badge-warning"><i class="fas fa-edit"></i> Ubah Surat</a>
+                                            <button class="badge badge-danger" data-toggle="modal" data-target="#deleteSurat<?= $s['id_surat']; ?>"><i class="fas fa-trash"></i> Hapus</button>
                                         <?php endif ?>
                                     <?php } ?>
 
@@ -98,6 +110,8 @@
                                             <i class="fas fa-clock"></i> Konfirmasi Kirim
                                         </a>
                                     <?php endif; ?>
+
+
                                 </td>
                             </tr>
                         <?php } ?>
@@ -299,6 +313,36 @@
         </div>
     </div>
 <?php endforeach; ?>
+
+
+
+
+<?php foreach ($suker as $s) : ?>
+    <!-- Modal Tambah Menu -->
+    <div class="modal fade" id="deleteSurat<?= $s['id_surat']; ?>" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel"><b class="text-danger"><i class="fas fa-info"></i> Apakah anda yakin ingin menghapus?</b></h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-auto">
+                    <form action="<?= base_url('hapusSuratl/' . $s['id_surat']); ?>" method="post">
+                        <div class="">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php endforeach; ?>
+
 
 
 

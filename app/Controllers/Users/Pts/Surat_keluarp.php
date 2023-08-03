@@ -299,4 +299,14 @@ class Surat_keluarp extends BaseController
 
     return redirect()->to('/suratkeluarp');
   }
+
+  public function deleteSuker($idsurat){
+    $m_surat=new M_surat();
+    $m_surat->deleteSurat($idsurat);
+
+    return redirect()->to('/suratkeluarp')->with('success', "SUKSES");
+
+  }
+
 }
+

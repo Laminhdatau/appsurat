@@ -40,6 +40,8 @@ $routes->post('simpanSukerp', 'Users\\Pts\\Surat_keluarp::simpanSuker', ['filter
 
 $routes->get('formUbahSukerp/(:any)', 'Users\\Pts\\Surat_keluarp::formUbahSuker/$1');
 $routes->post('updateSukerp/(:any)', 'Users\\Pts\\Surat_keluarp::updateSuker/$1');
+$routes->post('hapusSuratp/(:any)', 'Users\\Pts\\Surat_keluarp::deleteSuker/$1', ['filter' => 'permission:m-skpts']);
+$routes->post('hapusSuratl/(:any)', 'Users\\Lldikti\\Surat_keluarl::deleteSuker/$1', ['filter' => 'permission:m-skd']);
 
 
 $routes->post('validasiKirim/(:any)', 'Users\\Pts\\Surat_keluarp::validasiKirim/$1', ['filter' => 'permission:m-skpts']);

@@ -393,4 +393,14 @@ ORDER BY
 
     return redirect()->to('/suratkeluarl');
   }
+
+
+
+  public function deleteSuker($idsurat){
+    $m_surat=new M_surat();
+    $m_surat->deleteSurat($idsurat);
+
+    return redirect()->to('/suratkeluarl')->with('success', "SUKSES");
+
+  }
 }
