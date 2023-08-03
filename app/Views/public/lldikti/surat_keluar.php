@@ -13,7 +13,7 @@
                 <a href="<?= base_url('formTambahSukerl'); ?>" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Tambah
                 </a>
-             
+
             </div>
         </div>
 
@@ -37,54 +37,48 @@
                             <tr>
                                 <td class="col-4">
 
-                                    <?php if ($s['id_sur'] !== $s['id_surat']) { ?>
+
+                                    <?php if ($s['id_sur'] !== $s['id_surat'] || $s['id_sur'] === null | $s['stts_confirm'] === '2') : ?>
                                         <p>
-                                            <span><button class="badge btn-primary" data-toggle="modal" data-target="#id_sendtoarray<?= $s['id_surat'] ?>"><i class="fas fa-share"></i> Kirim Ke PTS</button></span>
+                                            <button class="badge btn-primary" data-toggle="modal" data-target="#id_sendtoarray<?= $s['id_surat'] ?>"><i class="fas fa-share"></i> Kirim Ke Instansi <i class="fas fa-university"></i></button>
                                         </p>
                                         <p>
-                                            <button class="badge btn-primary" data-toggle="modal" data-target="#id_sendtogrup<?= $s['id_surat'] ?>"><i class="fas fa-share"></i> Kirim Ke Wilayah PTS</button>
+                                            <button class="badge btn-primary" data-toggle="modal" data-target="#id_sendtogrup<?= $s['id_surat'] ?>"><i class="fas fa-share"></i> Kirim Ke Wilayah PTS <i class="fas fa-map-marker"></i></button>
                                         </p>
 
-                                    <?php } elseif ($s['id_sur'] === $s['id_surat'] && !empty($s['id_template_wil'])) { ?>
-                                        <a type="button" class="badge badge-success"><i class="fas fa-check"></i><i class="fas fa-check"></i> Dikirim Ke PTS</a>
-                                    <?php } elseif ($s['id_sur'] === $s['id_surat'] && !empty($s['id_wilayah'])) { ?>
-                                        <a type="button" class="badge badge-success"><i class="fas fa-check"></i><i class="fas fa-check"></i> Dikirim Ke Wilayah PTS</a>
-                                    <?php } ?>
+                                    <?php elseif ($s['id_sur'] === $s['id_surat'] && !empty($s['id_template_wil'])) : ?>
+                                        <?php if ($s['stts_confirm'] == '1') : ?>
+                                            <a type="button" class="badge badge-success"><i class="fas fa-check"></i> Dikirim Ke PTS</a> <span class="float-right"><a type="button" data-toggle="modal" class="badge btn-info" data-target="#detailKirim<?= $s['id_surat']; ?>"><i class="fas fa-info"></i> Info</a></span>
+                                        <?php elseif ($s['stts_confirm'] == '0') : ?>
+                                            <a type="button" class="badge badge-info"><i class="fas fa-clock"></i> Proses Dikirim Ke PTS</a>
+                                        <?php endif; ?>
+
+
+                                    <?php elseif ($s['id_sur'] === $s['id_surat'] && !empty($s['id_wilayah'])) : ?>
+                                        <?php if ($s['stts_confirm'] == '1') : ?>
+                                            <a type="button" class="badge badge-success"><i class="fas fa-check"></i> Dikirim Ke Wilayah PTS</a> <span class="float-right"><a type="button" data-toggle="modal" class="badge btn-info" data-target="#detailKirim<?= $s['id_surat']; ?>"><i class="fas fa-info"></i> Info</a></span>
+                                        <?php elseif ($s['stts_confirm'] == '0') : ?>
+                                            <a type="button" class="badge badge-info"><i class="fas fa-clock"></i> Proses Dikirim Ke Wilayah</a>
+                                        <?php endif; ?>
+                                    <?php endif ?>
+
+
                                 </td>
 
                                 <td class="col-5">
                                     <p><i class="fas fa-envelope"></i> <?= $s['nomor_surat'] ?><span class="float-right"><?= $s['tgl_surat'] ?></span></p>
                                     <p><?= $s['perihal']; ?>
-                                        <span class="float-right">
-                                            <?php if ($s['stts_confirm'] == 1) { ?>
-                                                <a type="button" class="badge btn-success">
-                                                    <i class="fas fa-success"></i> Terkirim
-                                                </a>
-                                            <?php } else { ?>
-                                                <a type="button" class="badge btn-danger">
-                                                    <i class="fas fa-times"></i> Dipending
-                                                </a>
-                                            <?php } ?>
-                                        </span>
+
                                     </p>
                                 </td>
 
-                                <td class="col-5">
-                                    <div class="progress">
-                                        <?php if (!empty($s['dilihat_oleh'])) { ?>
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="DIBACA" style="width: 100%">
-                                                <i class="fa fa-eye"></i>
-                                            </div>
-                                        <?php } elseif ($s['stts_confirm'] == '2') { ?>
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="PENDING" style="width: 25%">
-                                                <i class="fa fa-clock"></i>
-                                            </div>
-                                        <?php } else { ?>
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="Proses" style="width: 10%">
-                                                <i class="fa fa-random"></i>
-                                            </div>
-                                        <?php } ?>
-                                    </div>
+                                <td class="col-5 text-center">
+                                    <ul id="progressbar">
+                                        <li id="proses" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Proses"><a></a></li>
+                                        <li id="terkirim" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Terkirim"><a></a></li>
+                                        <li id="dilihat" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Dilihat"><a></a></li>
+
+                                    </ul>
                                 </td>
 
                                 <td>
@@ -93,23 +87,17 @@
 
                                     <?php } else { ?>
                                         <a type="button" data-toggle="modal" class="badge btn-success" data-target="#detailModal<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
-                                        <?php if ($s['id_status'] == 0) : ?>
+                                        <?php if ($s['id_status'] == '0') : ?>
                                             <a href="<?= base_url('formUbahSukerl/' . $s['id_surat']); ?>" class="badge badge-warning"><i class="fas fa-edit"></i> Ubah Surat</a>
                                         <?php endif ?>
                                     <?php } ?>
 
-                                    <a type="button" data-toggle="modal" class="badge btn-success" data-target="#detailKirim<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat Riwayat Kirim</a>
 
-
-
-                                    <?php if ($s['stts_confirm'] == 0) { ?>
-                                        <?php if ($s['id_sur']) : ?>
-                                            <a type="button" data-toggle="modal" class="badge btn-info" data-target="#konfirmasiKirim<?= $s['id_surat']; ?>">
-                                                <i class="fas fa-clock"></i> Konfirmasi Kirim
-                                            </a>
-                                            <a href="<?= base_url('formUbahSukerl/' . $s['id_surat']); ?>" class="badge badge-warning"><i class="fas fa-edit"></i> Ubah Surat</a>
-                                        <?php endif; ?>
-                                    <?php } ?>
+                                    <?php if ($s['id_sur'] && $s['stts_confirm'] == '0') : ?>
+                                        <a type="button" data-toggle="modal" class="badge btn-info" data-target="#konfirmasiKirim<?= $s['id_surat']; ?>">
+                                            <i class="fas fa-clock"></i> Konfirmasi Kirim
+                                        </a>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -450,6 +438,45 @@
     });
 </script>
 
+
+
+
+
+
+<script>
+    <?php foreach ($suker as $s) : ?>
+        <?php
+        $status = $s['id_status'];
+        if ($status) {
+            $statusArray = explode(',', $status);
+        } else {
+            $statusArray = [];
+        }
+        ?>
+        $(document).ready(function() {
+            $("#progressbar").each(function() {
+                var idSurat = "<?= $s['id_surat']; ?>";
+                var curStep = <?= json_encode($statusArray); ?>;
+                var active = <?= $s['is_active']; ?>;
+                setProgressBar(curStep, idSurat, active);
+            });
+
+            function setProgressBar(curStep, idSurat, active) {
+
+                if (active === 0 || active === 1 || curStep.includes('4')) {
+                    $("#proses[data-id='" + idSurat + "']").addClass("active");
+                }
+                if (curStep.includes('8')) {
+                    $("#terkirim[data-id='" + idSurat + "']").addClass("active");
+                }
+                if (curStep.includes('5')) {
+                    $("#dilihat[data-id='" + idSurat + "']").addClass("active");
+                }
+            }
+
+        });
+    <?php endforeach; ?>
+</script>
 
 
 

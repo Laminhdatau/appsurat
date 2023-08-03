@@ -146,4 +146,21 @@ class Surat_masukp extends BaseController
     echo $notifikasi;
   }
 
+
+
+  public function dilihatOleh($idSurat)
+  {
+    $M_surat = new M_surat();
+    $m_verif = new M_verifikasi();
+
+    $dataVer = [
+      'id_surat' => $idSurat,
+      'id_status' => '5',
+      'id_user' => idUser(),
+    ];
+    $m_verif->createVerifikasi($dataVer);
+
+    $M_surat->tambahDilihatOleh($idSurat, idPegawai());
+    return $this->response->setJSON(['message' => 'Pengguna ditambahkan ke daftar dilihat']);
+  }
 }

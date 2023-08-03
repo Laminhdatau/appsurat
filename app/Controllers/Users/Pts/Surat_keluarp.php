@@ -30,22 +30,25 @@ class Surat_keluarp extends BaseController
     i.nm_instansi AS dari,
     sl.tembusan,
     sl.filex,
+    sl.dilihat_oleh,
     sl.id_sendto,
     ins.nm_instansi as lldikti,
-    v.id_status
+    GROUP_CONCAT(v.id_status SEPARATOR ',')as id_status,sl.is_active
   FROM
     t_surat sl
   LEFT JOIN
     t_instansi i ON sl.id_instansi = i.id_instansi
     join t_instansi ins on ins.id_instansi=sl.id_sendto
     LEFT JOIN t_template_wil tw on tw.id_surat=sl.id_surat
-    left join t_verifikasi v on v.id_surat=sl.id_surat
-    
+    left join t_verifikasi v on v.id_surat=sl.id_surat 
+    left join t_status st on FIND_IN_SET(st.id_status,v.id_status)
+     
   JOIN
     t_sifat s ON sl.id_sifat = s.id_sifat
   JOIN
     t_jenis_surat j ON sl.id_jenis_surat = j.id_jenis_surat
     where sl.id_jenis_surat in(2,3)
+    and sl.created_by='" . idInstansi() . "'
   GROUP BY
     sl.id_surat,
     sl.perihal,
@@ -55,8 +58,7 @@ class Surat_keluarp extends BaseController
     j.jenis_surat,
     i.nm_instansi,
     sl.tembusan,
-    sl.filex,
-    v.id_status;");
+    sl.filex;");
 
     $users = $query->getResultArray();
     $sifat = $M_sifat->findAll();
@@ -110,6 +112,7 @@ class Surat_keluarp extends BaseController
     sl.tembusan,
     sl.filex,
     sl.id_sendto,
+    
     ins.nm_instansi as lldikti,
     v.id_status
   FROM
@@ -172,14 +175,14 @@ class Surat_keluarp extends BaseController
           'tgl_surat' => date('Y-m-d'), // Menggunakan format tanggal yang sesuai
           'is_active' => 0,
           'id_jenis_surat' => 3,
+          'id_sendto' => "0",
           'filex' => $doc,
-          'created_by' => idUser(),
+          'created_by' => idInstansi(),
           'nomor_surat' => $this->request->getPost('nomor_surat'),
           'id_sifat' => $this->request->getPost('id_sifat'),
           'id_instansi' => $this->request->getPost('id_instansi'),
           'tembusan' => $this->request->getPost('tembusan'),
           'id_pegawai' => $this->request->getPost('id_pegawai'),
-          'id_sendto' => "782909e8-09b4-11ee-8c85-503eaa456e2a",
           'perihal' => $this->request->getPost('perihal')
         ];
 
@@ -211,12 +214,12 @@ class Surat_keluarp extends BaseController
 
         $data = [
 
-          'created_by' => idUser(),
+          'created_by' => idInstansi(),
           'tgl_surat' => date('Y-m-d'),
           'id_jenis_surat' => 3,
           'is_active' => 0,
           'filex' => $doc,
-          'id_sendto' => "782909e8-09b4-11ee-8c85-503eaa456e2a",
+          'id_sendto' => "0",
           'nomor_surat' => $this->request->getPost('nomor_surat'),
           'id_sifat' => $this->request->getPost('id_sifat'),
           'id_instansi' => $this->request->getPost('id_instansi'),
@@ -249,30 +252,22 @@ class Surat_keluarp extends BaseController
     $m_surat = new M_surat();
     $m_verif = new M_verifikasi();
     $stts = $this->request->getPost('stts');
-    $cekIdSurat = $m_verif->find($id_surat);
 
     switch ($stts) {
       case '1':
 
         $dataUp = [
-          'stts_confirm' => $stts
+          'stts_confirm' => $stts,
+          'is_active' => '1'
         ];
         $m_surat->updateSurat($id_surat, $dataUp);
 
-        if (empty($cekIdSurat)) {
-          $dataVerif = [
-            'id_surat' => $id_surat,
-            'id_user' => $userId,
-            'id_status' => '8'
-          ];
-          $m_verif->createVerifikasi($dataVerif);
-        } else {
-          $dataVerif = [
-            'id_user' => $userId,
-            'id_status' => '8'
-          ];
-          $m_verif->updateVerifikasi($id_surat, $dataVerif);
-        }
+        $dataVerif = [
+          'id_surat' => $id_surat,
+          'id_user' => $userId,
+          'id_status' => '8'
+        ];
+        $m_verif->createVerifikasi($dataVerif);
 
         break;
 
@@ -280,24 +275,19 @@ class Surat_keluarp extends BaseController
 
 
         $dataUp = [
-          'stts_confirm' => $stts
+          'stts_confirm' => $stts,
+          'is_active' => '0'
+
         ];
         $m_surat->updateSurat($id_surat, $dataUp);
 
-        if (empty($cekIdSurat)) {
-          $dataVerif = [
-            'id_surat' => $id_surat,
-            'id_user' => $userId,
-            'id_status' => '4'
-          ];
-          $m_verif->createVerifikasi($dataVerif);
-        } else {
-          $dataVerif = [
-            'id_user' => $userId,
-            'id_status' => '4'
-          ];
-          $m_verif->updateVerifikasi($id_surat, $dataVerif);
-        }
+        $dataVerif = [
+          'id_surat' => $id_surat,
+          'id_user' => $userId,
+          'id_status' => '4'
+        ];
+        $m_verif->createVerifikasi($dataVerif);
+
         break;
 
 
@@ -309,6 +299,4 @@ class Surat_keluarp extends BaseController
 
     return redirect()->to('/suratkeluarp');
   }
-
-
 }

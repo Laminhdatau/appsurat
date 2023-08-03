@@ -8,7 +8,7 @@ class M_surat extends Model
 {
     protected $table = 't_surat';
     protected $primaryKey = 'id_surat';
-    protected $allowedFields = ['id_surat', 'nomor_surat', 'id_sifat', 'tgl_surat', 'id_jenis_surat', 'is_active', 'id_instansi', 'id_status', 'tembusan', 'filex', 'perihal', 'id_sendto', 'dilihat_oleh','created_by','stts_confirm'];
+    protected $allowedFields = ['id_surat', 'nomor_surat', 'id_sifat', 'tgl_surat', 'id_jenis_surat', 'is_active', 'id_instansi', 'id_status', 'tembusan', 'filex', 'perihal', 'id_sendto', 'dilihat_oleh', 'created_by', 'stts_confirm'];
 
     public function getSurat($id = null)
     {
@@ -59,4 +59,6 @@ class M_surat extends Model
     {
         return $this->delete($id);
     }
+
+
 }

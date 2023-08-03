@@ -44,11 +44,15 @@
                         <label class="custom-file-label" for="filex">FORMAT SURAT : .PDF/.JPG/.JPEG</label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <div id="filePreview">
+                        </div>
+                    </div>
             </div>
         </div>
         <div class="row">
             <div class="mx-auto">
-                <a href="<?= base_url('suratkeluarl'); ?>" type="button" class="btn btn-primary">Kembali</a>
+                <a href="<?= base_url('suratkeluarp'); ?>" type="button" class="btn btn-primary">Kembali</a>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </div>
@@ -56,11 +60,43 @@
 </div>
 
 
+
 <script>
     document.getElementById('filex').addEventListener('change', function() {
-        var fileName = this.files[0].name;
-        var label = document.querySelector('.custom-file-label');
+        const fileInput = this;
+        const filePreview = document.getElementById('filePreview');
+        const label = document.querySelector('.custom-file-label');
+
+        // Ambil nama file dari input
+        const fileName = fileInput.files[0] ? fileInput.files[0].name : 'Masukkan Kembali File Surat';
         label.textContent = fileName;
+
+        // Tampilkan tampilan preview jika file dipilih
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                // Tampilkan preview PDF
+                if (fileExtension === 'pdf') {
+                    filePreview.innerHTML = `<iframe src="${e.target.result}" width="100%" height="400px" frameborder="0"></iframe>`;
+                }
+                // Tampilkan preview gambar
+                else if (fileExtension === 'jpg' || fileExtension === 'jpeg') {
+                    filePreview.innerHTML = `<img src="${e.target.result}" alt="Preview Gambar" width="100%">`;
+                }
+                // Tipe file tidak dikenali, beri tahu pengguna
+                else {
+                    filePreview.innerHTML = '<p>Tipe file tidak dikenali. Hanya file PDF, JPG, dan JPEG yang diperbolehkan.</p>';
+                }
+            };
+
+            reader.readAsDataURL(file);
+        } else {
+            filePreview.innerHTML = '';
+        }
     });
 </script>
 

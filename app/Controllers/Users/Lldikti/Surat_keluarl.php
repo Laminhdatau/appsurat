@@ -30,58 +30,58 @@ class Surat_keluarl extends BaseController
     sl.nomor_surat,
     sl.dilihat_oleh,
     tw.id_surat as id_sur,
-    tw.id_template_wil,
-    tw.id_wilayah,
     s.sifat,
     sl.tgl_surat,
     j.jenis_surat,
     i.nm_instansi AS dari,
-    GROUP_CONCAT(DISTINCT a.id_instansi ORDER BY a.id_instansi SEPARATOR ', ') AS id_untuk,
-    GROUP_CONCAT(DISTINCT a.nm_instansi ORDER BY a.nm_instansi SEPARATOR ', ') AS untuk,
     sl.tembusan,
-    v.id_status,
+    sl.is_active,
     sl.filex,
     sl.created_by,
-    sl.stts_confirm
-  FROM
+    sl.stts_confirm,
+    GROUP_CONCAT(DISTINCT st.id_status SEPARATOR ',') as id_status,
+    GROUP_CONCAT(DISTINCT pts.id_instansi) as id_template_wil,
+    GROUP_CONCAT(DISTINCT w.id_wilayah) as id_wilayah
+FROM
     t_surat sl
-  LEFT JOIN
-    t_instansi i ON sl.id_instansi = i.id_instansi
-  LEFT JOIN
-    t_instansi a ON FIND_IN_SET(a.id_instansi, sl.id_sendto)
-  LEFT JOIN t_template_wil tw on tw.id_surat=sl.id_surat
-  JOIN
-    t_sifat s ON sl.id_sifat = s.id_sifat
-  JOIN
-    t_jenis_surat j ON sl.id_jenis_surat = j.id_jenis_surat
- left join t_verifikasi v on v.id_surat=sl.id_surat
- left join t_status st on st.id_status=v.id_status
- WHERE
-    sl.id_jenis_surat in(1) and
-    sl.is_active in (0,1)
-  GROUP BY
+LEFT JOIN t_template_wil tw ON tw.id_surat = sl.id_surat
+LEFT JOIN t_instansi i ON sl.id_instansi = i.id_instansi
+LEFT JOIN t_instansi pts ON FIND_IN_SET(pts.id_instansi, tw.id_template_wil)
+LEFT JOIN t_wilayah w ON FIND_IN_SET(w.id_wilayah, tw.id_wilayah)
+JOIN t_sifat s ON sl.id_sifat = s.id_sifat
+JOIN t_jenis_surat j ON sl.id_jenis_surat = j.id_jenis_surat
+LEFT JOIN t_verifikasi v ON v.id_surat = sl.id_surat
+LEFT JOIN t_status st ON FIND_IN_SET(st.id_status, v.id_status)
+WHERE
+    sl.id_jenis_surat = 1
+GROUP BY
     sl.id_surat,
     sl.perihal,
     sl.nomor_surat,
+    sl.dilihat_oleh,
     s.sifat,
     sl.tgl_surat,
     j.jenis_surat,
-    v.id_status,
+    i.nm_instansi,
     sl.tembusan,
+    sl.is_active,
     sl.filex,
-    tw.id_template_wil,
-    tw.id_wilayah
-    ORDER BY sl.created_at desc");
+    sl.created_by,
+    sl.stts_confirm
+ORDER BY
+    sl.created_at DESC;");
 
     $users = $query->getResultArray();
+
+
     $sifat = $M_sifat->findAll();
     $daftarInstansi = $M_instansi->findAll();
     $dataVerifikasi = $M_verifikasi->findAll();
     $daftarWilayah = $M_wilayah->findAll();
+
+
+    // GROUP PENGIRIMAN
     $tempWilayah = $M_temp_wil->find();
-
-    // dd($dataVerifikasi);
-
     $twil = null;
     $twil1 = null;
     $twil2 = null;
@@ -90,24 +90,25 @@ class Surat_keluarl extends BaseController
       $twil1 = $tw['id_template_wil'];
       $twil2 = $tw['id_wilayah'];
     }
-
     $filterInstansi = array_filter($daftarInstansi, function ($instansi) {
-      return $instansi['id_instansi'] !== '782909e8-09b4-11ee-8c85-503eaa456e2a';
+      return $instansi['id_instansi'] !== '0';
     });
-
-
     $daftarFilterInstansi = array_values($filterInstansi);
+
+    // END GROUP PENGIRIMAN
+
 
     $data = [
       'title' => 'Surat Keluar',
       'suker' => $users,
       'sifat' => $sifat,
-      'instansii' => $daftarFilterInstansi,
       'wilayah' => $daftarWilayah,
+      'verifikasi' => $dataVerifikasi,
+
+      'instansii' => $daftarFilterInstansi,
       'id_sur' => $twil,
       'id_sur1' => $twil1,
       'id_sur2' => $twil2,
-      'verifikasi' => $dataVerifikasi,
     ];
 
 
@@ -130,7 +131,6 @@ class Surat_keluarl extends BaseController
     $data = [
       'title' => 'Tambah Surat Keluar',
       'sifat' => $sifat
-
     ];
 
 
@@ -164,6 +164,7 @@ class Surat_keluarl extends BaseController
     GROUP_CONCAT(DISTINCT a.nm_instansi ORDER BY a.nm_instansi SEPARATOR ', ') AS untuk,
     sl.tembusan,
     v.id_status,
+    sl.is_active,
     sl.filex,
     sl.created_by,
     sl.stts_confirm
@@ -223,16 +224,15 @@ class Surat_keluarl extends BaseController
     $file = $this->request->getFile('filex');
     // Validasi jenis file
     if ($file->isValid() && !$file->hasMoved() && in_array($file->getExtension(), ['pdf', 'jpg', 'jpeg'])) {
-      $doc = $file->getRandomName();
-
+      // $doc = $file->getRandomName();
+      $doc = auto_uuid();
       if ($file->move('./assets/document/', $doc)) {
         $data = [
-          'id_surat' => auto_uuid(),
+          'id_surat' => $doc,
           'tgl_surat' => date('Y-m-d'), // Menggunakan format tanggal yang sesuai
           'id_jenis_surat' => '1',
           'is_active' => '0',
           'created_by' => $userId,
-          'stts_confirm' => '0',
           'id_instansi' => idInstansi(),
           'filex' => $doc,
           'nomor_surat' => $this->request->getPost('nomor_surat'),
@@ -244,7 +244,6 @@ class Surat_keluarl extends BaseController
 
         $M_surat = new M_surat();
         $M_surat->saveSurat($data);
-
         return redirect()->to('/suratkeluarl')->with('success', "SUKSES");
       } else {
         return $file->getErrorString();
@@ -261,7 +260,7 @@ class Surat_keluarl extends BaseController
     $file = $this->request->getFile('filex');
     // Validasi jenis file
     if ($file->isValid() && !$file->hasMoved() && in_array($file->getExtension(), ['pdf', 'jpg', 'jpeg'])) {
-      $doc = $file->getRandomName();
+      $doc = $id;
 
       if ($file->move('./assets/document/', $doc)) {
         $data = [
@@ -269,7 +268,6 @@ class Surat_keluarl extends BaseController
           'id_jenis_surat' => '1',
           'is_active' => '0',
           'created_by' => $userId,
-          'stts_confirm' => '0',
           'filex' => $doc,
           'id_instansi' => idInstansi(),
           'nomor_surat' => $this->request->getPost('nomor_surat'),
@@ -294,58 +292,23 @@ class Surat_keluarl extends BaseController
   public function sendToIns()
   {
 
-    $userId = idUser();
+
     $instansi = $this->request->getPost('daftarInstansi');
     $surat = $this->request->getPost('id_surat');
     $instansiString = implode(",", $instansi);
     $m_temp_wil = new M_temp_wil();
-    $m_verif = new M_verifikasi();
+    $data = [
+      'id_surat' => $surat,
+      'id_template_wil' => $instansiString
+    ];
+
+    $m_temp_wil->createWil($data);
+
     $m_surat = new M_surat();
-
-    $cekIdSurat = $m_verif->find($surat);
-    if (empty($cekIdSurat)) {
-
-      $data = [
-        'id_surat' => $surat,
-        'id_template_wil' => $instansiString,
-
-      ];
-
-      $m_temp_wil->createWil($data);
-
-      $dataSur = [
-        'stts_confirm' => '0',
-      ];
-      $m_surat->updateSurat($surat, $dataSur);
-
-      $dataVer = [
-        'id_surat' => $surat,
-        'id_status' => '9',
-        'id_user' => $userId,
-      ];
-
-      $m_verif->createVerifikasi($dataVer);
-    } else {
-      $data = [
-        'id_surat' => $surat,
-        'id_template_wil' => $instansiString,
-
-      ];
-
-      $dataSur = [
-        'stts_confirm' => '0',
-
-      ];
-      $m_surat->updateSurat($surat, $dataSur);
-
-      $m_temp_wil->createWil($data);
-      $dataVer = [
-        'id_status' => '9',
-        'id_user' => $userId,
-      ];
-
-      $m_verif->updateVerifikasi($surat, $dataVer);
-    }
+    $data = [
+      'stts_confirm' => '0'
+    ];
+    $m_surat->updateSurat($surat, $data);
 
     return redirect()->to('/suratkeluarl')->with('success', "SUKSES");
   }
@@ -355,62 +318,28 @@ class Surat_keluarl extends BaseController
 
   public function sendAll()
   {
-    $userId = idUser();
+
     $wilayah = $this->request->getPost('daftarWilayah');
     $surat = $this->request->getPost('id_surat');
     $wilayahString = implode(",", $wilayah);
     $m_temp_wil = new M_temp_wil();
-    $m_verif = new M_verifikasi();
+
+
+    $data = [
+      'id_surat' => $surat,
+      'id_wilayah' => $wilayahString,
+
+    ];
+    $m_temp_wil->createWil($data);
+
     $m_surat = new M_surat();
-
-
-    $cekIdSurat = $m_verif->find($surat);
-    if (empty($cekIdSurat)) {
-      $data = [
-        'id_surat' => $surat,
-        'id_wilayah' => $wilayahString,
-
-      ];
-      $m_temp_wil->createWil($data);
-      $dataSur = [
-        'stts_confirm' => '0',
-
-      ];
-      $m_surat->updateSurat($surat, $dataSur);
-
-      $dataVer = [
-        'id_surat' => $surat,
-        'id_status' => '9',
-        'id_user' => $userId,
-      ];
-      $m_verif->createVerifikasi($dataVer);
-    } else {
-      $data = [
-        'id_surat' => $surat,
-        'id_wilayah' => $wilayahString,
-      ];
-      $m_temp_wil->createWil($data);
-
-      $dataSur = [
-        'stts_confirm' => '0',
-
-      ];
-      $m_surat->updateSurat($surat, $dataSur);
-
-      $dataVer = [
-        'id_status' => '9',
-        'id_user' => $userId,
-      ];
-      $m_verif->updateVerifikasi($surat, $dataVer);
-    }
-
-
-
+    $data = [
+      'stts_confirm' => '0'
+    ];
+    $m_surat->updateSurat($surat, $data);
 
     return redirect()->to('/suratkeluarl')->with('success', "SUKSES");
   }
-
-
 
   public function konfirmasiSend($id_surat)
   {
@@ -419,7 +348,6 @@ class Surat_keluarl extends BaseController
     $m_surat = new M_surat();
     $m_verif = new M_verifikasi();
     $stts = $this->request->getPost('stts');
-    $cekIdSurat = $m_verif->find($id_surat);
 
     switch ($stts) {
       case '1':
@@ -427,47 +355,33 @@ class Surat_keluarl extends BaseController
         $dataUp = [
           'stts_confirm' => $stts
         ];
+
         $m_surat->updateSurat($id_surat, $dataUp);
 
-        if (empty($cekIdSurat)) {
-          $dataVerif = [
-            'id_surat' => $id_surat,
-            'id_user' => $userId,
-            'id_status' => '8'
-          ];
-          $m_verif->createVerifikasi($dataVerif);
-        } else {
-          $dataVerif = [
-            'id_user' => $userId,
-            'id_status' => '8'
-          ];
-          $m_verif->updateVerifikasi($id_surat, $dataVerif);
-        }
+        $dataVerif = [
+          'id_surat' => $id_surat,
+          'id_user' => $userId,
+          'id_status' => '8'
+        ];
+        $m_verif->createVerifikasi($dataVerif);
 
         break;
 
       case '2':
-
 
         $dataUp = [
           'stts_confirm' => $stts
         ];
         $m_surat->updateSurat($id_surat, $dataUp);
 
-        if (empty($cekIdSurat)) {
-          $dataVerif = [
-            'id_surat' => $id_surat,
-            'id_user' => $userId,
-            'id_status' => '4'
-          ];
-          $m_verif->createVerifikasi($dataVerif);
-        } else {
-          $dataVerif = [
-            'id_user' => $userId,
-            'id_status' => '4'
-          ];
-          $m_verif->updateVerifikasi($id_surat, $dataVerif);
-        }
+
+        $dataVerif = [
+          'id_surat' => $id_surat,
+          'id_user' => $userId,
+          'id_status' => '4'
+        ];
+        $m_verif->createVerifikasi($dataVerif);
+
         break;
 
 
@@ -478,16 +392,5 @@ class Surat_keluarl extends BaseController
 
 
     return redirect()->to('/suratkeluarl');
-  }
-
-
-
-  // SETINGAN UNTUK 
-  public function dilihatOleh($idSurat)
-  {
-    $M_surat = new M_surat();
-    $M_surat->tambahDilihatOleh($idSurat, user()->email);
-
-    return $this->response->setJSON(['message' => 'Pengguna ditambahkan ke daftar dilihat']);
   }
 }

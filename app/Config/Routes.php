@@ -28,6 +28,9 @@ $routes->get('formUbahSukerl/(:any)', 'Users\\Lldikti\\Surat_keluarl::formUbahSu
 $routes->post('updateSukerl/(:any)', 'Users\\Lldikti\\Surat_keluarl::updateSuker/$1');
 
 
+$routes->post('getCurStep/(:any)', 'Users\\Pts\\Surat_keluarp::getCurStep/$1');
+
+
 
 
 $routes->get('suratkeluarp', 'Users\\Pts\\Surat_keluarp::index', ['filter' => 'permission:m-skpts']);

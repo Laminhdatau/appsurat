@@ -151,9 +151,37 @@
         }
 
         .huruf-arial {
-            font-family: 'Times New Roman', Times, serif;
+            font-family: 'Times New Roman';
             font-weight: normal;
         }
+
+
+
+
+        /* 
+
+
+
+        th>#dasar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            text-align: left;
+            border: 1px solid black;
+            width: 60px;
+
+            padding: 0px 5px 0px;
+        }
+        td>#dasar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            text-align: left;
+            border: 1px solid black;
+            width: 60px;
+
+            padding: 0px 5px 0px;
+        } */
     </style>
 
 
@@ -191,18 +219,27 @@
                         $dasarText = $surgas->dasar;
                         $dasarArray = explode("<br>", $dasarText);
                         ?>
-
-                        <div class="">Dasar :
-                            <?php if (count($dasarArray) > 1) : ?>
+                        <!-- <table class="table-bordered kolom10">
+                            <thead>
+                                <th id="dasar">Dasar : </th>
+                                <td id="isidasar"> -->
+                        <div class=""> Dasar : <?php if (count($dasarArray) > 1) : ?>
                                 <ul>
                                     <?php foreach ($dasarArray as $item) : ?>
-                                        <li> <?= $item; ?></li>
+                                        <li>
+                                            <?= $item; ?>
+                                        </li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else : ?>
                                 <?= $surgas->dasar; ?>
                             <?php endif; ?>
                         </div>
+
+                        <!-- </td>
+                            </thead>
+                        </table> -->
+
 
                         <p>Kepala Lembaga Layanan Pendidikan Tinggi (LLDIKTI) Wilayah XVI menugaskan kepada: </p>
                         <div class="table-responsive">

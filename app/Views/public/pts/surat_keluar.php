@@ -1,97 +1,6 @@
 <?= $this->extend('layout/v_apk/template'); ?>
 
 <?= $this->section('content'); ?>
-<style>
-    /*The background card*/
-    .card {
-        z-index: 0;
-        border: none;
-        position: relative;
-    }
-
-
-    /*Icon progressbar*/
-    #progressbar {
-        margin-bottom: 30px;
-        overflow: hidden;
-        color: lightgrey;
-    }
-
-    #progressbar .active {
-        color: #673AB7;
-    }
-
-    #progressbar li {
-        list-style-type: none;
-        font-size: 15px;
-        width: 25%;
-        float: left;
-        position: relative;
-        font-weight: 400;
-    }
-
-    /*Icons in the ProgressBar*/
-    #progressbar #proses:before {
-        font-family: FontAwesome;
-        content: "\f13e";
-    }
-
-    #progressbar #disposisi:before {
-        font-family: FontAwesome;
-        content: "\f007";
-    }
-
-    #progressbar #diteruskan:before {
-        font-family: FontAwesome;
-        content: "\f030";
-    }
-
-    #progressbar #dilaporkan:before {
-        font-family: FontAwesome;
-        content: "\f00c";
-    }
-
-    /*Icon ProgressBar before any progress*/
-    #progressbar li:before {
-        width: 50px;
-        height: 50px;
-        line-height: 45px;
-        display: block;
-        font-size: 20px;
-        color: #ffffff;
-        background: lightgray;
-        border-radius: 50%;
-        margin: 0 auto 10px auto;
-        padding: 2px;
-    }
-
-    /*ProgressBar connectors*/
-    #progressbar li:after {
-        content: '';
-        width: 100%;
-        height: 2px;
-        background: lightgray;
-        position: absolute;
-        left: 0;
-        top: 25px;
-        z-index: -1;
-    }
-
-    /*Color number of the step and the connector before it*/
-    #progressbar li.active:before,
-    #progressbar li.active:after {
-        background: #673AB7;
-    }
-
-    /*Animated Progress Bar*/
-    .progress {
-        height: 20px;
-    }
-
-    .progress-bar {
-        background-color: #673AB7;
-    }
-</style>
 
 <div class="container-fluid">
     <!-- DataTales Example -->
@@ -122,50 +31,54 @@
                     </thead>
                     <tbody>
                         <?php foreach ($suker as $s) : ?>
+                            <?php
+                            $status = $s['id_status'];
+                            if ($status) {
+                                $statusArray = explode(',', $status);
+                            } else {
+                                $statusArray = [];
+                            }
+                            ?>
 
 
                             <tr>
                                 <td class="col-3">
                                     <p><?= $s['lldikti']; ?>
-                                        <?php if (empty($s['id_status'])) { ?>
+                                        <?php if (empty($status)) { ?>
                                             <span class="float-right text-primary">
-
                                                 <i class="fas fa-random"></i> Diproses
-                                            <?php } elseif ($s['id_status'] == 4) { ?>
+                                            <?php } elseif (in_array('4', $statusArray)) { ?>
                                                 <span class="float-right text-danger">
                                                     <i class="fas fa-clock"></i> Dipending
-
-                                                <?php } elseif ($s['id_status'] == 8) { ?>
+                                                <?php } elseif (in_array('8', $statusArray)) { ?>
                                                     <span class="float-right text-success">
-
                                                         <i class="fas fa-check"></i><i class="fas fa-check"></i> Terkirim
                                                     <?php } ?>
                                                     </span>
                                     </p>
                                     <p><?= $s['sifat']; ?></p>
                                 </td>
-                                <td class="col-5">
-                                    <p><i class="fas fa-envelope"></i> <?= $s['nomor_surat'] ?><span class="float-right"><?= $s['tgl_surat'] ?></span></p>
+                                <td class="col-4">
+                                    <p><i class="fas fa-envelope"></i> <?= $s['nomor_surat'] ?><span class="float-right"><i class="fas fa-calendar"></i><?= $s['tgl_surat'] ?></span></p>
                                     <p><?= $s['perihal']; ?></p>
                                 </td>
-                                <td class="col-5">
+                                <td class="col-4 text-center">
                                     <ul id="progressbar">
-                                        <li class="active" id="proses"><strong>Account</strong></li>
-                                        <li id="disposisi"><strong>Personal</strong></li>
-                                        <li id="diteruskan"><strong>Image</strong></li>
-                                        <li id="dilaporkan"><strong>Finish</strong></li>
+                                        <li id="proses" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Proses"><a></a></li>
+                                        <li id="terkirim" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Terkirim"><a></a></li>
+                                        <li id="dilihat" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Dilihat"><a></a></li>
+
                                     </ul>
                                 </td>
 
-                                <td>
+                                <td class="col-1">
                                     <a type="button" data-toggle="modal" class="badge btn-success" data-target="#detailModal<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
-
-                                    <a href="<?= base_url('formUbahSukerp/' . $s['id_surat']); ?>" class="badge badge-warning"><i class="fas fa-edit"></i> Ubah Surat</a>
-
-
-                                    <a type="button" data-toggle="modal" class="badge btn-info" data-target="#konfirmasiKirim<?= $s['id_surat']; ?>">
-                                        <i class="fas fa-clock"></i> Konfirmasi Kirim
-                                    </a>
+                                    <?php if ($s['is_active'] == '0') : ?>
+                                        <a href="<?= base_url('formUbahSukerp/' . $s['id_surat']); ?>" class="badge badge-warning"><i class="fas fa-edit"></i> Ubah Surat</a>
+                                        <a type="button" data-toggle="modal" class="badge btn-info" data-target="#konfirmasiKirim<?= $s['id_surat']; ?>">
+                                            <i class="fas fa-clock"></i> Konfirmasi Kirim
+                                        </a>
+                                    <?php endif; ?>
 
                                 </td>
 
@@ -270,8 +183,6 @@
 <?php endforeach; ?>
 
 
-
-
 <?php foreach ($suker as $s) : ?>
     <!-- Modal Tambah Menu -->
     <div class="modal fade" id="konfirmasiKirim<?= $s['id_surat']; ?>" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
@@ -295,53 +206,47 @@
             </div>
         </div>
     </div>
+
 <?php endforeach; ?>
 
 
 
 
 
-
-
-
-
 <script>
-    $(document).ready(function() {
-        var steps = $("fieldset").length;
-        var curStep = <?= $s['id_status']; ?>; // Ganti dengan nilai id_status yang sesuai
+    <?php foreach ($suker as $s) : ?>
+        <?php
+        $status = $s['id_status'];
+        if ($status) {
+            $statusArray = explode(',', $status);
+        } else {
+            $statusArray = [];
+        }
+        ?>
+        $(document).ready(function() {
+            $("#progressbar").each(function() {
+                var idSurat = "<?= $s['id_surat']; ?>";
+                var curStep = <?= json_encode($statusArray); ?>;
+                var active = <?= $s['is_active']; ?>;
+                setProgressBar(curStep, idSurat, active);
+            });
 
-        // setProgressBar(current);
+            function setProgressBar(curStep, idSurat, active) {
 
-        function setProgressBar(curStep) {
-            if (empty(curStep)) {
-                // Jika id_status adalah 0, aktifkan langkah "DIPROSES"
-                $("#proses").addClass("active");
-                $(".progress-bar").css("width", "25%");
-            } else if (curStep === '8') {
-                // Jika id_status adalah 11, aktifkan langkah "DIPROSES" dan "DILAPORKAN"
-                $("#proses, #dilaporkan").addClass("active");
-                $(".progress-bar").css("width", "100%");
-            } else {
-                // Jika id_status adalah selain 0 atau 11, aktifkan langkah sesuai nilai id_status
-                $("#progressbar li").removeClass("active");
-                $("#progressbar li:lt(" + curStep + ")").addClass("active");
-
-                var percent = parseFloat(100 / steps) * curStep;
-                percent = percent.toFixed();
-                $(".progress-bar").css("width", percent + "%");
-
-                showStep(curStep);
+                if (active === 0 || active === 1 || curStep.includes('4')) {
+                    $("#proses[data-id='" + idSurat + "']").addClass("active");
+                }
+                if (curStep.includes('8')) {
+                    $("#terkirim[data-id='" + idSurat + "']").addClass("active");
+                }
+                if (curStep.includes('5')) {
+                    $("#dilihat[data-id='" + idSurat + "']").addClass("active");
+                }
             }
-        }
 
-        function showStep(step) {
-            $("fieldset").hide();
-            $("fieldset:eq(" + (step - 1) + ")").show();
-        }
-    });
+        });
+    <?php endforeach; ?>
 </script>
-
-
 
 
 <?= $this->endSection(); ?>

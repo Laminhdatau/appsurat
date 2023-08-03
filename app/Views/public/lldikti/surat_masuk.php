@@ -56,18 +56,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($sumas as $s) : ?>
+                        <?php foreach ($sumas as $s) {
 
+                            $status = $s['id_status'];
+                            if ($status) {
+                                $statusArray = explode(',', $status);
+                            } else {
+                                $statusArray = [];
+                            }
+                        ?>
 
                             <tr>
-                                <td>
+                                <td class="col-2">
                                     <p><?= $s['dari']; ?></p>
                                 </td>
-                                <td>
+
+                                <td class="col-3">
                                     <p><?= $s['nomor_surat'] ?><span class="float-right"><?= $s['tgl_surat'] ?></span></p>
 
                                 </td>
-                                <td>
+                                <td class="col-3">
                                     <div>
                                         <?php
                                         $disposisiFound = false;
@@ -87,57 +95,33 @@
                                         ?>
 
                                     </div>
-
-
-
                                 </td>
-                                <td>
-
-                                    <div class="progress">
-                                        <?php if ($s['id_status'] == 0) : ?>
-                                            <!-- Tahap 1 -->
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="DIPROSES" style="width: 25%">
-                                                <i class="fa fa-random"></i>
-                                            </div>
-                                        <?php elseif ($disposisiFound) : ?>
-                                            <!-- Tahap 2 -->
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" data-toggle="tooltip" data-placement="top" data-original-title="DISPOSISI" style="width: 50%">
-                                                <i class="fa fa-book"></i>
-                                            </div>
-                                        <?php elseif ($s['id_status'] == 10) : ?>
-                                            <!-- Tahap 3 -->
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" data-original-title="DITERUSKAN" style="width: 75%">
-                                                <i class="fa fa-share"></i>
-                                            </div>
-                                        <?php elseif ($s['id_status'] == 11) : ?>
-                                            <!-- Tahap 4 -->
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" data-original-title="DILAPORKAN" style="width: 100%">
-                                                <i class="fa fa-bullhorn"></i>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
+                                <td class="col-3 text-center">
+                                    <ul id="progressbar">
+                                        <li id="proses" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Proses"><a></a></li>
+                                        <li id="disposisi" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Disposisi"><a></a></li>
+                                        <li id="diteruskan" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Diteruskan"><a></a></li>
+                                        <li id="dilaporkan" data-id="<?= $s['id_surat']; ?>" data-toggle="tooltip" title="Dilaporkan"><a></a></li>
+                                    </ul>
                                 </td>
 
-
-                                <td>
-                                    <?php if ($s['id_status'] == 0) : ?>
+                                <td class="col-1">
+                                    <?php if (in_array('8', $statusArray)) : ?>
                                         <a type="button" data-toggle="modal" data-target="#detailModal<?= $s['id_surat']; ?>" class="badge btn-success btn-lihat" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
                                         <?php if (!$disposisiFound) { ?>
                                             <a type="button" class="badge btn-success btn-konfirmasi" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-check"></i> Konfirmasi</a>
                                             <a type="button" id="btn-disposisi" class="badge badge-primary" data-target="#disposisi<?= $s['id_surat']; ?>" data-toggle="modal"><i class="fas fa-share"></i> Disposisi</a>
                                         <?php }  ?>
-                                    <?php elseif ($s['id_status'] == '10') : ?>
+                                    <?php elseif (in_array('10', $statusArray)) : ?>
                                         <a type="button" data-toggle="modal" class="badge btn-success btn-lihat" data-target="#detailModal<?= $s['id_surat']; ?>" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
-                                        <a type="button" class="badge btn-dark"><i class="fas fa-check"></i> Terkonfirmasi</a>
-
-                                    <?php elseif ($s['id_status'] == '11') : ?>
+                                    <?php elseif (in_array('11', $statusArray)) : ?>
                                         <a type="button" data-toggle="modal" class="badge btn-success btn-lihat" data-target="#detailModal<?= $s['id_surat']; ?>" data-id="<?= $s['id_surat']; ?>"><i class="fas fa-eye"></i> Lihat</a>
 
                                     <?php endif; ?>
                                 </td>
 
                             </tr>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </tbody>
                 </table>
 
@@ -260,7 +244,7 @@
 
 
         $.ajax({
-            url: 'disposisill',
+            url: '<?= base_url('disposisill'); ?>',
             type: 'POST',
             data: {
                 daftarpegawai: daftarpegawai,
@@ -337,9 +321,47 @@
     });
 </script>
 
+<script>
+    <?php foreach ($sumas as $s) : ?>
+        <?php
+        $status = $s['id_status'];
+        if ($status) {
+            $statusArray = explode(',', $status);
+        } else {
+            $statusArray = [];
+        }
+        ?>
+        $(document).ready(function() {
+            $("#progressbar").each(function() {
+                var idSurat = "<?= $s['id_surat'] ?>";
+                var curStep = <?= json_encode($statusArray); ?>;
+                var active = <?= $s['is_active'] ?>;
 
+                console.log(idSurat);
+                console.log(curStep);
+                console.log(active);
+                setProgressBar(curStep, idSurat, active);
+            });
 
+            function setProgressBar(curStep, idSurat, active) {
 
+                if (active === 0 || active === 1 || curStep.includes('4')) {
+                    $("#proses[data-id='" + idSurat + "']").addClass("active");
+                }
+                if (curStep.includes('11')) {
+                    $("#disposisi[data-id='" + idSurat + "']").addClass("active");
+                }
+                if (curStep.includes('6')) {
+                    $("#diteruskan[data-id='" + idSurat + "']").addClass("active");
+                }
+                if (curStep.includes('7')) {
+                    $("#dilaporkan[data-id='" + idSurat + "']").addClass("active");
+                }
+            }
+
+        });
+    <?php endforeach; ?>
+</script>
 
 
 

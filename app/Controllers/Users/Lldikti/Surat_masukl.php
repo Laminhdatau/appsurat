@@ -30,10 +30,11 @@ class Surat_masukl extends BaseController
     i.nm_instansi AS dari,
     GROUP_CONCAT(DISTINCT a.id_instansi ORDER BY a.id_instansi SEPARATOR ', ') AS id_untuk,
     GROUP_CONCAT(DISTINCT a.nm_instansi ORDER BY a.nm_instansi SEPARATOR ', ') AS untuk,
-    v.id_status,
+
     sl.tembusan,
     sl.filex,
-    sl.is_active
+    sl.is_active,
+    GROUP_CONCAT(v.id_status SEPARATOR ',')as id_status
   FROM
     t_surat sl
   LEFT JOIN
@@ -46,9 +47,10 @@ class Surat_masukl extends BaseController
     t_jenis_surat j ON sl.id_jenis_surat = j.id_jenis_surat
   LEFT JOIN
     t_verifikasi v ON v.id_surat = sl.id_surat
+    left join t_status st on FIND_IN_SET(st.id_status,v.id_status)
   WHERE
     sl.id_jenis_surat in (3) and
-    sl.is_active in (0)
+    sl.is_active in (1)
   GROUP BY
     sl.id_surat,
     sl.perihal,
@@ -57,7 +59,6 @@ class Surat_masukl extends BaseController
     sl.tgl_surat,
     j.jenis_surat,
     i.nm_instansi,
-    v.id_status,
     sl.tembusan,
     sl.filex;");
 
@@ -135,14 +136,14 @@ class Surat_masukl extends BaseController
   public function disposisilldikti()
   {
 
+    $disposisiModel = new M_disposisi();
+    $m_verif = new M_verifikasi();
     $userId = idUser();
     $id = $this->request->getPost('id_surat');
     $pegawai = $this->request->getPost('daftarpegawai');
     $instruksi = $this->request->getPost('instruksi');
     $pegawaiString = implode(",", $pegawai);
     $instrukString = implode(",", $instruksi);
-    $disposisiModel = new M_disposisi();
-    $m_verif = new M_verifikasi();
 
 
     $data = [
@@ -163,53 +164,32 @@ class Surat_masukl extends BaseController
     $m_verif->createVerifikasi($verif);
 
 
-    if ($this->request->getPost('simpan')) {
-      $pegawai = $this->request->getPost('daftarpegawai');
-      $instruksi = $this->request->getPost('instruksi');
-      $pegawaiString = implode(",", $pegawai);
-      $instrukString = implode(",", $instruksi);
+    // if ($this->request->getPost('simpan')) {
+    //   $pegawai = $this->request->getPost('daftarpegawai');
+    //   $instruksi = $this->request->getPost('instruksi');
+    //   $pegawaiString = implode(",", $pegawai);
+    //   $instrukString = implode(",", $instruksi);
 
-      $data = [
-        'id_surat_dispos' => $id,
-        'id_instruksi' => $instrukString,
-        'id_pegawai_tujuan' => $pegawaiString,
-        'user_id' => $userId,
-        'id_jenis_surat' => 3
-      ];
+    //   $data = [
+    //     'id_surat_dispos' => $id,
+    //     'id_instruksi' => $instrukString,
+    //     'id_pegawai_tujuan' => $pegawaiString,
+    //     'user_id' => $userId,
+    //     'id_jenis_surat' => 3
+    //   ];
 
-      $disposisiModel->createdisposisi($data);
+    //   $disposisiModel->createdisposisi($data);
 
-      $verif = [
-        'id_surat' => $id,
-        'id_user' => $userId,
-        'id_status' => '11'
-      ];
-      $m_verif->createVerifikasi($verif);
-    }
+    //   $verif = [
+    //     'id_surat' => $id,
+    //     'id_user' => $userId,
+    //     'id_status' => '11'
+    //   ];
+    //   $m_verif->createVerifikasi($verif);
+    // }
 
     return redirect()->to('/suratmasukl')->with('success', "SUKSES");
   }
-
-
-  public function get_notifikasil()
-  {
-    $M_surat = new M_surat();
-    $hitung = $M_surat->query("SELECT COUNT(id_status) as notif
-                FROM t_surat
-                WHERE id_jenis_surat = '3' AND id_status = '0';");
-
-    $notifikasil = $hitung->getRow()->notif;
-
-    echo $notifikasil;
-  }
-
-
-  public function reset_notifikasi()
-  {
-    $M_surat = new M_surat();
-    $M_surat->query("UPDATE t_surat SET id_status = '5' WHERE id_jenis_surat = '3';");
-  }
-
 
 
   public function indexDisposisi()
@@ -315,5 +295,22 @@ GROUP BY
     ];
     $M_verif->updateVerifikasi($id_surat, $data);
     return $this->response->setStatusCode(200)->setBody('Konfirmasi berhasil');
+  }
+
+
+  public function dilihatOleh($idSurat)
+  {
+    $M_surat = new M_surat();
+    $m_verif = new M_verifikasi();
+
+    $dataVer = [
+      'id_surat' => $idSurat,
+      'id_status' => '5',
+      'id_user' => idUser(),
+    ];
+    $m_verif->createVerifikasi($dataVer);
+
+    $M_surat->tambahDilihatOleh($idSurat, idPegawai());
+    return $this->response->setJSON(['message' => 'Pengguna ditambahkan ke daftar dilihat']);
   }
 }
