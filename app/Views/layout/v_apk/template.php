@@ -67,7 +67,9 @@
 
             <?php if (logged_in()) : ?>
 
-                <?php if (in_groups('admdikti') || in_groups('pegl') || in_groups('sumin')) : ?>
+                <?php if (in_groups('admdikti') || in_groups('pegl')) : ?>
+
+                    <!-- =========================ZONA 1 -->
 
                     <div class="sidebar-heading">Surat</div>
                     <hr class="sidebar-divider my-0">
@@ -94,7 +96,38 @@
                             <!-- <span class="badge float-right badge-danger" id="countsurgas"></span> -->
                         </a>
                     </li>
-                  
+
+                <?php endif; ?>
+
+
+                <!-- ========================================  ZONA 2  -->
+
+                <?php if (in_groups('sumin')) : ?>
+
+                    <div class="sidebar-heading">Admin</div>
+                    <hr class="sidebar-divider my-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('userpermission'); ?>">
+                            <i class="fas fa-fw fa-key"></i>
+                            <span>User Akses</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('gruppermission'); ?>">
+                            <i class="fas fa-fw fa-key"></i>
+                            <span>Level Akses</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('leveluser'); ?>">
+                            <i class="fas fa-fw fa-users"></i>
+                            <span>Level User</span>
+                        </a>
+                    </li>
+
                 <?php endif; ?>
 
 
@@ -118,7 +151,7 @@
                             <!-- <span class="badge float-right badge-danger" id="countsurgas"></span> -->
                         </a>
                     </li>
-                   
+
                 <?php endif; ?>
 
 
@@ -133,7 +166,7 @@
                             <!-- <span class="badge float-right badge-danger" id="countsumasp"></span> -->
                         </a>
                     </li>
-                   
+
                 <?php endif; ?>
 
 
@@ -154,18 +187,18 @@
                         </a>
                     </li>
 
-                 
+
                 <?php endif; ?>
 
                 <div class="sidebar-heading">Logout</div>
-                    <hr class="sidebar-divider my-0">
+                <hr class="sidebar-divider my-0">
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('logout'); ?>">
-                            <i class="fas fa-fw fa-sign-out-alt"></i>
-                            <span>Keluar</span>
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= base_url('logout'); ?>">
+                        <i class="fas fa-fw fa-sign-out-alt"></i>
+                        <span>Keluar</span>
+                    </a>
+                </li>
 
             <?php endif; ?>
             <!-- Sidebar Toggler (Sidebar) -->
@@ -360,7 +393,7 @@
     <script src="<?= base_url('assets/'); ?>js/sb-admin-2.min.js"></script>
 
     <script>
-        $(function () {
+        $(function() {
             $('[data-toggle="tooltip"]').tooltip()
         })
     </script>
@@ -406,71 +439,6 @@
             });
         });
     </script>
-
-
-
-    <!-- <script>
-    $(document).ready(function() {
-        $('#kodeajax').ready(function() {
-            var kode = $(this).val();
-            $.ajax({
-                url: '<= base_url('getKodeSurat'); ?>', // Ganti dengan URL ke fungsi searchKodeSurat() di Controller Anda
-                method: 'GET', // Metode permintaan harus sesuai dengan fungsi di Controller Anda
-                dataType: 'json',
-                data: {
-                    keyword: kode
-                },
-                success: function(response) {
-                    // Berikan data yang diterima ke elemen select yang sesuai
-                    $('#kodeajax').empty(); // Kosongkan elemen select sebelum mengisi dengan opsi baru
-                    $('#kodeajax').append('<option value="">--PILIH KODE SURAT--</option>');
-                    $.each(response, function(index, data) {
-                        $('#kodeajax').append('<option value="' + data.nomor_surat + '">' + data.nomor_surat + ' - ' + data.perihal + '</option>');
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText); // Tampilkan pesan error jika permintaan gagal
-                }
-            });
-        });
-
-    });
-    // Inisialisasi Select2 pada elemen select
-    $('#kodeajax').select2({
-        placeholder: "PILIH CARI",
-        theme: "bootstrap-4"
-    })
-</script> -->
-
-    <!-- <script>
-        $('.custom-file-input').on('change', function() {
-            let fileName = $(this).val().split('\\').pop();
-            $(this).next('.custom-file-label').addClass("selected").html(fileName);
-        });
-
-
-
-        $('.form-check-input').on('click', function() {
-            const id_menu = $(this).data('menu');
-            const id_level = $(this).data('level');
-
-            $.ajax({
-                url: "<= base_url('ubahAkses'); ?>",
-                type: 'post',
-                data: {
-                    id_menu: id_menu,
-                    id_level: id_level
-                },
-                success: function() {
-                    document.location.href = "<= base_url('Akses'); ?>" + id_level;
-                }
-            });
-
-        });
-    </script> -->
-
-
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
 
 
 

@@ -19,6 +19,42 @@ $routes->set404Override();
 
 $routes->get('/', 'Dashboard::index');
 
+
+
+// SUPER ADMIN
+
+
+$routes->get('userpermission', 'Admin\\Aksesuser::index', ['filter' => 'role:sumin']);
+$routes->post('adduserpermission', 'Admin\\Aksesuser::addUserPermission', ['filter' => 'role:sumin']);
+$routes->post('removeuserpermission/(:num)/(:any)', 'Admin\\Aksesuser::removeUserPermission/$1/$2', ['filter' => 'role:sumin']);
+
+$routes->get('gruppermission', 'Admin\\Aksesuser::grup', ['filter' => 'role:sumin']);
+$routes->post('addgruppermission', 'Admin\\Aksesuser::addGroupPermission', ['filter' => 'role:sumin']);
+$routes->post('removegruppermission/(:num)/(:any)', 'Admin\\Aksesuser::removeGrupPermission/$1/$2', ['filter' => 'role:sumin']);
+
+$routes->get('leveluser', 'Admin\\Aksesuser::level');
+$routes->post('adduserlevel', 'Admin\\Aksesuser::addUserLevel');
+$routes->post('removeuserlevel/(:num)/(:any)', 'Admin\\Aksesuser::removeUserLevel/$1/$2');
+
+
+// END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 $routes->get('suratkeluarl', 'Users\\Lldikti\\Surat_keluarl::index', ['filter' => 'permission:m-skd']);
 
 $routes->get('formTambahSukerl', 'Users\\Lldikti\\Surat_keluarl::formTambahSuker');

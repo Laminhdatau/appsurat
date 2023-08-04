@@ -8,7 +8,7 @@ class M_groups extends Model
 {
     protected $table = 'auth_groups';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['name', 'description'];
+    protected $allowedFields = ['id','name', 'description'];
 
     public function getGroup($id = null)
     {

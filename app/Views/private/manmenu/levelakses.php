@@ -11,8 +11,6 @@
     <div class="row">
         <div class="col-lg-6">
 
-            <?= session()->getFlashdata('message'); ?>
-
             <h5>Role: <?= $role['role']; ?></h5>
 
             <table class="table table-hover">
@@ -44,5 +42,35 @@
     </div>
 
 </div>
-<!-- /.container-fluid -->
+
+
+
+<script>
+    $('.custom-file-input').on('change', function() {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+
+
+
+    $('.form-check-input').on('click', function() {
+        const menuId = $(this).data('menu');
+        const roleId = $(this).data('role');
+
+        $.ajax({
+            url: "<?= base_url('admin/changeaccess'); ?>",
+            type: 'post',
+            data: {
+                menuId: menuId,
+                roleId: roleId
+            },
+            success: function() {
+                document.location.href = "<?= base_url('admin/roleaccess/'); ?>" + roleId;
+            }
+        });
+
+    });
+</script>
+
+
 <?= $this->endSection(); ?>
