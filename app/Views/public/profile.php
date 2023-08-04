@@ -5,7 +5,7 @@
 <div class="container float-left">
     
     <div class="card" style="width: 20rem; ">
-        <img class="card-img-top" src="<?= base_url('assets/img/'.$users->user_image); ?>" alt="image" style="width: 200px;">
+        <img class="card-img-top" src="<?= base_url('assets/img/'.user()->user_image); ?>" alt="image" style="width: 200px;">
         <div class="card-body">
             <h5 class="card-title">My Profile</h5>
             <p class="card-text"><?= $users->nama_lengkap; ?></p>

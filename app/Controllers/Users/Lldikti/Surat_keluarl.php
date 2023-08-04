@@ -222,6 +222,12 @@ ORDER BY
 
     $userId = idUser();
     $file = $this->request->getFile('filex');
+    $tembusan = $this->request->getPost('tembusan');
+    if ($tembusan) {
+      $tembusarray = implode(',', $tembusan);
+    } else {
+      $tembusarray = null;
+    }
     // Validasi jenis file
     if ($file->isValid() && !$file->hasMoved() && in_array($file->getExtension(), ['pdf', 'jpg', 'jpeg'])) {
       // $doc = $file->getRandomName();
@@ -237,7 +243,7 @@ ORDER BY
           'filex' => $doc,
           'nomor_surat' => $this->request->getPost('nomor_surat'),
           'id_sifat' => $this->request->getPost('id_sifat'),
-          'tembusan' => $this->request->getPost('tembusan'),
+          'tembusan' => $tembusarray,
           'id_pegawai' => $this->request->getPost('id_pegawai'),
           'perihal' => $this->request->getPost('perihal'),
         ];
@@ -258,6 +264,12 @@ ORDER BY
 
     $userId = idUser();
     $file = $this->request->getFile('filex');
+    $tembusan = $this->request->getPost('tembusan');
+    if ($tembusan) {
+      $tembusarray = implode(',', $tembusan);
+    } else {
+      $tembusarray = null;
+    }
     // Validasi jenis file
     if ($file->isValid() && !$file->hasMoved() && in_array($file->getExtension(), ['pdf', 'jpg', 'jpeg'])) {
       $doc = $id;
@@ -272,7 +284,7 @@ ORDER BY
           'id_instansi' => idInstansi(),
           'nomor_surat' => $this->request->getPost('nomor_surat'),
           'id_sifat' => $this->request->getPost('id_sifat'),
-          'tembusan' => $this->request->getPost('tembusan'),
+          'tembusan' => $tembusan,
           'id_pegawai' => $this->request->getPost('id_pegawai'),
           'perihal' => $this->request->getPost('perihal')
         ];

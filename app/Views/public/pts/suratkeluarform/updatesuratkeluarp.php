@@ -6,6 +6,8 @@
         <h3 class="text-center text-bold text-white">UPDATE SURAT KELUAR</h3>
     </div>
 
+    <?php $a = $suker->tembusan;
+    $tembusan = explode(',', $a); ?>
 
     <form action="<?= base_url('updateSukerp/' . $suker->id_surat); ?>" method="post" enctype="multipart/form-data">
         <div class="row">
@@ -18,10 +20,19 @@
                     <label for="">Perihal</label>
                     <input type="text" name="perihal" id="" placeholder="ex. UNDANGAN REVIEW NASKAH AKADEMIK " value="<?= $suker->perihal; ?>" class="form-control" required>
                 </div>
+
                 <div class="form-group">
                     <label for="">Tembusan <span>(bisa dikosongkan)</span></label>
-                    <input type="text" name="tembusan" class="form-control" value="<?= $suker->tembusan; ?>">
+                    <div id="input-container">
+                        <?php foreach ($tembusan as $t) : ?>
+                            <div class="input-group">
+                                <button type="button" class="badge badge-secondary add-input" style="margin-right: 5px;"><i class="fas fa-plus"></i></button>
+                                <input type="text" name="tembusan[]" class="form-control" value="<?= $t; ?>">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label for="">Sifat</label>
                     <select name="id_sifat" id="" class="form-control" required>
@@ -46,8 +57,8 @@
                 </div>
                 <div class="form-group">
                     <div id="filePreview">
-                        </div>
                     </div>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -99,5 +110,30 @@
         }
     });
 </script>
+
+<script>
+    $(document).ready(function() {
+        var container = $("#input-container");
+        var tambahKolom = $(".add-input");
+
+        container.find(".input-group").each(function() {
+            $(this).prepend('<button type="button" class="badge badge-danger add-remove" style="margin-right: 5px;"><i class="fas fa-trash"></i></button>');
+        });
+
+        // Ketika tombol "Tambah Kolom" diklik
+        tambahKolom.click(function() {
+            var newInput = '<div class="input-group">' +'<button type="button" class="badge badge-danger add-remove" style="margin-right: 5px;"><i class="fas fa-trash"></i></button>'+
+                '<input type="text" name="tembusan[]" class="form-control" placeholder="ex. Keputusan ..." required>' +
+                '</div>';
+            container.prepend(newInput);
+        });
+
+        // Ketika tombol "Hapus" diklik
+        container.on('click', '.add-remove', function() {
+            $(this).parent('.input-group').remove();
+        });
+    });
+</script>
+
 
 <?= $this->endSection(); ?>

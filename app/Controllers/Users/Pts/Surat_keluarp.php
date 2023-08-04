@@ -163,6 +163,12 @@ class Surat_keluarp extends BaseController
   public function simpanSuker()
   {
     $file = $this->request->getFile('filex');
+    $tembusan = $this->request->getPost('tembusan');
+    if ($tembusan) {
+      $tembusarray = implode(',', $tembusan);
+    } else {
+      $tembusarray = null;
+    }
 
     // Validasi jenis file
     if ($file->isValid() && !$file->hasMoved() && in_array($file->getExtension(), ['pdf', 'jpg', 'jpeg', 'png'])) {
@@ -181,7 +187,7 @@ class Surat_keluarp extends BaseController
           'nomor_surat' => $this->request->getPost('nomor_surat'),
           'id_sifat' => $this->request->getPost('id_sifat'),
           'id_instansi' => $this->request->getPost('id_instansi'),
-          'tembusan' => $this->request->getPost('tembusan'),
+          'tembusan' => $tembusarray,
           'id_pegawai' => $this->request->getPost('id_pegawai'),
           'perihal' => $this->request->getPost('perihal')
         ];
@@ -205,6 +211,12 @@ class Surat_keluarp extends BaseController
   public function updateSuker($id)
   {
     $file = $this->request->getFile('filex');
+    $tembusan = $this->request->getPost('tembusan');
+    if ($tembusan) {
+      $tembusarray = implode(',', $tembusan);
+    } else {
+      $tembusarray = null;
+    }
 
     // Validasi jenis file
     if ($file->isValid() && !$file->hasMoved() && in_array($file->getExtension(), ['pdf', 'jpg', 'jpeg', 'png'])) {
@@ -223,7 +235,7 @@ class Surat_keluarp extends BaseController
           'nomor_surat' => $this->request->getPost('nomor_surat'),
           'id_sifat' => $this->request->getPost('id_sifat'),
           'id_instansi' => $this->request->getPost('id_instansi'),
-          'tembusan' => $this->request->getPost('tembusan'),
+          'tembusan' => $tembusarray,
           'id_pegawai' => $this->request->getPost('id_pegawai'),
           'perihal' => $this->request->getPost('perihal'),
         ];
@@ -300,13 +312,11 @@ class Surat_keluarp extends BaseController
     return redirect()->to('/suratkeluarp');
   }
 
-  public function deleteSuker($idsurat){
-    $m_surat=new M_surat();
+  public function deleteSuker($idsurat)
+  {
+    $m_surat = new M_surat();
     $m_surat->deleteSurat($idsurat);
 
     return redirect()->to('/suratkeluarp')->with('success', "SUKSES");
-
   }
-
 }
-

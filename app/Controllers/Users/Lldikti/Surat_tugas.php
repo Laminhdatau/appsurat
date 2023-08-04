@@ -594,4 +594,21 @@ FROM
 
         return $this->response->setJSON($results);
     }
+
+
+    public function addTembusan()
+    {
+        $id = $this->request->getPost('id_surat_tugas');
+        $tembusan = $this->request->getPost('tembusan');
+        $tembusanArray = implode('<br>', $tembusan);
+
+        $m_surgas = new M_surgas();
+        $data = [
+            'tembusan' => $tembusanArray
+        ];
+
+        $results = $m_surgas->updateSurgas($id, $data);
+
+        return $this->response->setJSON($results);
+    }
 }

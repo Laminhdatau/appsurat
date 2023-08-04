@@ -17,9 +17,13 @@
                     <label for="">Perihal</label>
                     <input type="text" name="perihal" id="" placeholder="ex. UNDANGAN REVIEW NASKAH AKADEMIK " class="form-control" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group ">
                     <label for="">Tembusan <span>(bisa dikosongkan)</span></label>
-                    <input type="text" name="tembusan" class="form-control">
+                    <div id="input-container"></div>
+                    <div class="input-group">
+                        <button type="button" class="badge badge-secondary add-input" style="margin-right: 5px;"><i class="fas fa-plus"></i></button>
+                        <input type="text" name="tembusan[]" class="form-control" placeholder="ex. Keputusan ...">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="">Sifat</label>
@@ -96,6 +100,29 @@
         } else {
             filePreview.innerHTML = '';
         }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        var container = $("#input-container");
+        var tambahKolom = $(".add-input");
+
+        // Ketika tombol "Tambah Kolom" diklik
+        tambahKolom.click(function() {
+            var newInput = '<div class="input-group" >' +
+                '<button type="button" class="badge badge-danger remove-input" style="margin-right: 5px;"><i class="fas fa-trash"></i></button>' +
+                '<input type="text" name="tembusan[]" class="form-control" placeholder="ex. Keputusan ..." required>' +
+                '</div>';
+            container.prepend(newInput);
+        });
+
+        // Ketika tombol "Hapus" diklik
+        container.on('click', '.remove-input', function() {
+            $(this).parent('.input-group').remove();
+        });
+
+
     });
 </script>
 
