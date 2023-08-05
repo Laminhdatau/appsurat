@@ -36,6 +36,13 @@ $routes->get('leveluser', 'Admin\\Aksesuser::level');
 $routes->post('adduserlevel', 'Admin\\Aksesuser::addUserLevel');
 $routes->post('removeuserlevel/(:num)/(:any)', 'Admin\\Aksesuser::removeUserLevel/$1/$2');
 
+$routes->get('pegawaiuserp', 'Admin\\Pegawaiuser::userpegawaip');
+$routes->post('adduserpegawaip', 'Admin\\Pegawaiuser::addPegawaiUserp');
+$routes->post('removepegawaiuserp/(:num)/(:any)', 'Admin\\Pegawaiuser::removePegawaiUserp/$1/$2');
+
+$routes->get('pegawaiuserl', 'Admin\\Pegawaiuser::index');
+$routes->post('adduserpegawail', 'Admin\\Pegawaiuser::addPegawaiUserl');
+$routes->post('removepegawaiuserl/(:num)/(:any)', 'Admin\\Pegawaiuser::removePegawaiUserl/$1/$2');
 
 // END
 

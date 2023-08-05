@@ -12,21 +12,21 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered table-hover col-12" id="dataTable" cellspacing="0">
-                    <thead>
+                    <thead class="bg-dark text-white">
                         <tr>
-                            <th>Nomor Surat/Perihal</th>
-                            <th>Dasar</th>
-                            <th>Penerima</th>
-                            <th>Tujuan Surat</th>
-                            <th>Tempat Pelaksanaan</th>
-                            <th>Tanda Tangan</th>
+                            <th>PERIHAL</th>
+                            <th>DASAR</th>
+                            <th>PENERIMA</th>
+                            <th>TUJUAN</th>
+                            <th>LOKASI</th>
+                            <th>TANDA TANGAN</th>
                             <th>
                                 <?php
                                 if (in_groups('leadl')) { ?>
                                     Aksi
                                 <?php } else { ?>
-                                    <button class="badge badge-primary" data-target="#addModal" data-toggle="modal"><i class="fas fa-plus"></i> Buat Surat</button>
-                                    <button class="badge badge-primary" data-target="#booking" data-toggle="modal"><i class="fas fa-plus"></i> Booking Number</button>
+                                    <button class="badge badge-primary" data-target="#addModal" data-toggle="modal"><i class="fas fa-plus"></i> BUAT SURAT</button>
+                                    <button class="badge badge-primary" data-target="#booking" data-toggle="modal"><i class="fas fa-plus"></i> BOOKING NOMOR</button>
                                 <?php } ?>
                             </th>
                         </tr>
@@ -83,19 +83,19 @@
                                 </td>
 
                                 <td class="col-5">
-                                    <?php
-                                    $dasar = $s['dasar'];
+                                   
+                                        <?php
+                                        $dasar = $s['dasar'];
 
-                                    $explodedDasar = explode('<br>', $dasar);
-                                    if (count($explodedDasar) > 1) {
-                                        foreach ($explodedDasar as $item) {
-                                            echo '<li>' . $item . '</li>';
+                                        $explodedDasar = explode(',', $dasar);
+                                        if (count($explodedDasar) > 1) {
+                                            foreach ($explodedDasar as $item) {
+                                                echo '<li>' . $item . '</li>';
+                                            }
+                                        } else {
+                                            echo $dasar;
                                         }
-                                    } else {
-                                        echo $dasar;
-                                    }
-                                    ?>
-                                    <div id="tampil"></div>
+                                        ?>
                                     <?php if (empty($s['verifikator'])) : ?>
                                         <form class="saveDasar" data-id="<?= $s['id_surat_tugas']; ?>">
                                             <div>
@@ -251,7 +251,7 @@
                                     <?php } ?>
                                 </td>
 
-                           
+
 
                             </tr>
                         <?php } ?>

@@ -128,6 +128,21 @@
                         </a>
                     </li>
 
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('pegawaiuserl'); ?>">
+                            <i class="fas fa-fw fa-bank"></i>
+                            <span>User LLDIKTI</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('pegawaiuserp'); ?>">
+                            <i class="fas fa-fw fa-university"></i>
+                            <span>User PTS</span>
+                        </a>
+                    </li>
+
                 <?php endif; ?>
 
 

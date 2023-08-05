@@ -167,4 +167,4 @@
 
 
 
-<?= $this->endSection() ?>
+<?= $this->endSection(); ?>

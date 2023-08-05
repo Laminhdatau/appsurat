@@ -46,12 +46,12 @@
 
                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
 
-                    <thead>
-                        <tr>
-                            <th>Sifat</th>
-                            <th>Nomor Surat/Tgl/Tembusan</th>
-                            <th>Instruksi</th>
-                            <th>Aksi</th>
+                    <thead class="bg-dark text-white">
+                        <tr >
+                            <th>SIFAT</th>
+                            <th>PERIHAL</th>
+                            <th>INSTRUKSI</th>
+                            <th>AKSI</th>
                         </tr>
                     </thead>
                     <tbody>
