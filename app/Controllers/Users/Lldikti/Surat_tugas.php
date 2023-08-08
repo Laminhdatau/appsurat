@@ -43,19 +43,19 @@ class Surat_tugas extends BaseController
         $kodeSurat = $m_reff->findAll();
         $idUser = idUser();
         $idPegawai = idPegawai();
-        $isAdmdikti = in_groups('admdikti');
         $verifikator = verifikator();
 
-        
+
+        $active = ''; // Inisialisasi variabel $active dengan string kosong
+
         if ($idUser == '16') {
             $active = "WHERE st.is_active='1'";
-        } else if (!$isAdmdikti || $isAdmdikti) {
-            $active = "WHERE st.created_by='$idUser'";
-        } else if ($verifikator->verifikator) {
-            $active = "WHERE FIND_IN_SET('$idPegawai', st.verifikator)";
-        } else {
-            $active = '';
+        } elseif (!is_null($verifikator) && $verifikator->verifikator) {
+            $active = "WHERE FIND_IN_SET('" . $idPegawai . "', st.verifikator)";
+        } elseif ($idUser) {
+            $active = "WHERE st.created_by='" . idUser() . "'";
         }
+
 
 
         $querySurgas = $m_surgas->query("SELECT
@@ -65,8 +65,9 @@ class Surat_tugas extends BaseController
         n.perihal,
         GROUP_CONCAT(DISTINCT p.id_pegawai) AS ids_pegawai,
         GROUP_CONCAT(DISTINCT p.nama_lengkap SEPARATOR '<br> ') AS nama_pegawai,
-        IF(COUNT(DISTINCT v.id_status) = 1, MAX(v.id_status), GROUP_CONCAT(DISTINCT v.id_status ORDER BY v.id_status)) AS id_status
-    FROM
+        IF(COUNT(DISTINCT v.id_status) = 1, MAX(v.id_status), GROUP_CONCAT(DISTINCT v.id_status 
+        ORDER BY v.id_status)) AS id_status
+        FROM
         t_surat_tugas st
         LEFT JOIN t_surat_tugas_pegawai tp ON tp.id_surat_tugas = st.id_surat_tugas
         LEFT JOIN db_pegawai.t_pegawai p ON FIND_IN_SET(p.id_pegawai, tp.id_pegawai_string) > 0

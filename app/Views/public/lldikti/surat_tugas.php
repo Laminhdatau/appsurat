@@ -83,19 +83,19 @@
                                 </td>
 
                                 <td class="col-5">
-                                   
-                                        <?php
-                                        $dasar = $s['dasar'];
 
-                                        $explodedDasar = explode(',', $dasar);
-                                        if (count($explodedDasar) > 1) {
-                                            foreach ($explodedDasar as $item) {
-                                                echo '<li>' . $item . '</li>';
-                                            }
-                                        } else {
-                                            echo $dasar;
+                                    <?php
+                                    $dasar = $s['dasar'];
+
+                                    $explodedDasar = explode(',', $dasar);
+                                    if (count($explodedDasar) > 1) {
+                                        foreach ($explodedDasar as $item) {
+                                            echo '<li>' . $item . '</li>';
                                         }
-                                        ?>
+                                    } else {
+                                        echo $dasar;
+                                    }
+                                    ?>
                                     <?php if (empty($s['verifikator'])) : ?>
                                         <form class="saveDasar" data-id="<?= $s['id_surat_tugas']; ?>">
                                             <div>
@@ -175,84 +175,68 @@
                                 </td>
 
                                 <td>
+
                                     <?php if (!empty($s['qr_code_image_path'])) { ?>
                                         <a class="badge badge-primary btn-dtl" target="_blank" href="<?= base_url('DetailSuratPdf/' . $s['id_surat_tugas']); ?>"><i class="fas fa-book"></i> Lihat Surat</a><br>
                                     <?php } ?>
 
                                     <?php if (idUser() !== '16') { ?>
                                         <?php if (empty($s['qr_code_image_path'])) { ?>
-                                            <?php $status = $s['id_status'];
+                                            <?php
+                                            $status = $s['id_status'];
                                             $sttsArray = explode(",", $status);
-                                            if (!in_array("1", $sttsArray)) : ?>
+
+                                            if (!in_array("1", $sttsArray)) { ?>
+
                                                 <button class="badge badge-primary" data-toggle="modal" data-target="#updateModal<?= $s['id_surat_tugas']; ?>"><i class="fas fa-edit"></i> Ubah Data</button><br>
-                                            <?php endif; ?>
+
+                                            <?php } ?>
+
                                         <?php } ?>
                                     <?php } ?>
+
 
                                     <?php if (!empty($s['nama_pegawai'])) { ?>
 
-                                        <?php if (idUser() == '16') { ?>
-
-                                            <?php if (
-                                                !empty($s['nama_pegawai']) ||
-                                                !empty($s['verifikator']) ||
-                                                !empty($s['dasar']) ||
-                                                !empty($s['tanggal_terbit']) ||
-                                                !empty($s['tgl_mulai']) ||
-                                                !empty($s['tgl_selesai']) ||
-                                                !empty($s['tujuan_surat']) ||
-                                                !empty($s['tempat_pelaksanaan'])
-                                            ) : ?>
-                                                <?php $status = $s['id_status'];
-
-                                                $sttsArray = explode(",", $status);
-                                                if (in_array("12", $sttsArray)) : ?>
-                                                    <?php if (empty($s['qr_code_image_path'])) { ?>
-                                                        <button class="badge badge-primary" data-toggle="modal" data-target="#tandaTangan<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Tanda Tangan</button>
-                                                    <?php } ?>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-
-
-                                        <?php } else { ?>
-
-                                            <?php if (!empty($s['verifikator'])) {
-                                                $verifikatorIds = explode(',', $s['verifikator']);
-                                                $idPegawaiSession = idPegawai();
-                                                if (in_array($idPegawaiSession, $verifikatorIds)) {
-                                            ?>
-                                                    <?php $status = $s['id_status'];
-                                                    $sttsArray = explode(",", $status);
-                                                    if (!in_array("11", $sttsArray)) : ?>
-                                                        <?php if (!in_array("1", $sttsArray)) : ?>
-                                                            <button class="badge badge-primary" data-toggle="modal" data-target="#verifikasi<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Verifikasi</button>
-                                                        <?php endif; ?>
-                                                    <?php endif ?>
-                                            <?php
-                                                }
-                                            }
-                                            ?>
-                                        <?php } ?>
-                                    <?php } ?>
-
-                                    <?php if (idUser() !== '16') { ?>
-
                                         <?php if (
+
                                             !empty($s['nama_pegawai']) &&
-                                            empty($s['tanggal_terbit']) &&
                                             !empty($s['tgl_mulai']) &&
+                                            !empty($s['verifikator']) &&
                                             !empty($s['tgl_selesai']) &&
                                             !empty($s['tujuan_surat']) &&
-                                            !empty($s['tempat_pelaksanaan']) && empty($s['qr_code_image_path'] && !empty($s['dasar']))
-                                        ) { ?>
+                                            !empty($s['tempat_pelaksanaan']) &&
+                                            !empty($s['dasar'])
+
+                                        ) {
+
+
+                                        ?>
+
+                                            <?php if (idUser() == '16') { ?>
+                                                <?php if (empty($s['qr_code_image_path']) && !empty($s['verifikator'])) : ?>
+                                                    <button class="badge badge-primary" data-toggle="modal" data-target="#tandaTangan<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Tanda Tangan</button>
+                                                <?php endif; ?>
+
+                                            <?php } else { ?>
+                                                <?php if (empty($s['qr_code_image_path'])) { ?>
+                                                    <?php if (verifikasisetuju()) { ?>
+                                                        <button class="badge badge-primary" data-toggle="modal" data-target="#verifikasi<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Verifikasi</button>
+                                                    <?php } ?>
+                                                <?php } ?>
+
+                                            <?php } ?>
+                                        <?php } ?>
+                                    <?php } ?>
+
+
+                                    <?php if (idUser() !== '16') { ?>
+                                        <?php if (empty($s['verifikator'])) { ?>
                                             <button class="badge badge-primary" data-toggle="modal" data-target="#addverifikator<?= $s['id_surat_tugas']; ?>"><i class="fas fa-plus"></i> Tambah Verifikator</button>
                                         <?php } ?>
-
                                     <?php } ?>
+
                                 </td>
-
-
-
                             </tr>
                         <?php } ?>
 

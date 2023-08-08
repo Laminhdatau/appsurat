@@ -81,3 +81,17 @@
 
 
             ?>
+
+
+
+
+
+            select p.id_pegawai AS id_pegawai,p.nama_lengkap AS nama_lengkap,p.nip AS nip,p.pangkat AS pangkat,p.golongan AS golongan,p.jabatan AS jabatan,p.tmpt_lahir AS tmpt_lahir,p.tanggal_lahir AS tanggal_lahir,p.jenis_kelamin AS jenis_kelamin,p.jenis_pegawai AS jenis_pegawai,p.id_instansi AS id_instansi,p.keterangan AS keterangan from t_pegawai p union all select pt.id_pegawai AS id_pegawai,pt.nama_lengkap AS nama_lengkap,pt.nip AS nip,pt.pangkat AS pangkat,pt.golongan AS golongan,pt.jabatan AS jabatan,pt.tmpt_lahir AS tmpt_lahir,pt.tanggal_lahir AS tanggal_lahir,pt.jenis_kelamin AS jenis_kelamin,pt.jenis_pegawai AS jenis_pegawai,pt.id_instansi AS id_instansi,pt.keterangan AS keterangan from t_pegawai_pts pt order by id_pegawai,id_instansi
+
+
+
+            select u.id AS id_user,u.email AS email,u.username AS username,u.user_image AS user_image,group_concat(g.id separator ',') AS id_groups,group_concat(g.name separator ',') AS level,group_concat(g.description separator ',') AS ket_level from users u join auth_groups g join auth_groups_users gu where ((u.id = gu.user_id) and (g.id = gu.group_id)) group by u.id
+
+
+
+            select `p`.`id_pegawai` AS `id_pegawai`,`p`.`nama_lengkap` AS `nama_lengkap`,`p`.`nip` AS `nip`,`p`.`pangkat` AS `pangkat`,`p`.`golongan` AS `golongan`,`p`.`jabatan` AS `jabatan`,`p`.`tmpt_lahir` AS `tmpt_lahir`,`p`.`tanggal_lahir` AS `tanggal_lahir`,`p`.`jenis_kelamin` AS `jenis_kelamin`,`p`.`jenis_pegawai` AS `jenis_pegawai`,`p`.`id_instansi` AS `id_instansi`,`p`.`keterangan` AS `keterangan` from `pers_pegawai`.`t_pegawai` `p` union all select `pt`.`id_pegawai` AS `id_pegawai`,`pt`.`nama_lengkap` AS `nama_lengkap`,`pt`.`nip` AS `nip`,`pt`.`pangkat` AS `pangkat`,`pt`.`golongan` AS `golongan`,`pt`.`jabatan` AS `jabatan`,`pt`.`tmpt_lahir` AS `tmpt_lahir`,`pt`.`tanggal_lahir` AS `tanggal_lahir`,`pt`.`jenis_kelamin` AS `jenis_kelamin`,`pt`.`jenis_pegawai` AS `jenis_pegawai`,`pt`.`id_instansi` AS `id_instansi`,`pt`.`keterangan` AS `keterangan` from `pers_petrodikti`.`t_pegawai_pts` `pt` order by `id_pegawai`,`id_instansi`

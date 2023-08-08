@@ -10,7 +10,7 @@
     <meta name="author" content="">
 
     <title>
-        Auth
+        Auth Persuratan 
     </title>
 
     <!-- Custom fonts for this template-->

@@ -108,6 +108,20 @@
                     <hr class="sidebar-divider my-0">
 
                     <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('people'); ?>">
+                            <i class="fas fa-fw fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('pegawai'); ?>">
+                            <i class="fas fa-fw fa-users"></i>
+                            <span>Pegawai</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('userpermission'); ?>">
                             <i class="fas fa-fw fa-key"></i>
                             <span>User Akses</span>
@@ -292,10 +306,11 @@
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="<?= base_url('profile'); ?>">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
+
+                                    <a class="dropdown-item" href="<?= base_url('profile'); ?>">
+                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Profile
+                                    </a>
 
                                 <div class="dropdown-divider"></div>
                                 <?php if (logged_in()) : ?>
@@ -364,36 +379,6 @@
             </div>
         </div>
     </div>
-
-
-
-    <div class="modal fade" id="profile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Profile</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <form action="" method="post">
-                    <div class="modal-body">
-                        <div class="row">
-                            INI PROFILE
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
-                        <button class="btn btn-secondary" type="submit">Simpan</button>
-                </form>
-            </div>
-        </div>
-    </div>
-    </div>
-
-
-
-
 
 
 

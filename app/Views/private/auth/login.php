@@ -14,7 +14,9 @@
                         <div class="col-lg">
                             <div class="p-5">
                                 <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4"><?= lang('Auth.loginTitle') ?></h1>
+                                    <h1 class="h4 text-gray-900">PETRO<span class="font-weight-bold">DIKTI</span></h1>
+                                    <h1 class="h5 text-gray-900 mb-2">Persuratan Elektronik LLDIKTI</h1>
+                                    <h1 class="h6 text-gray-900 mb-7">Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi</h1>
                                 </div>
                                 <?= view('Myth\Auth\Views\_message_block') ?>
                                 <form class="user" method="post" action="<?= url_to('login') ?>"><?= csrf_field() ?>
@@ -50,7 +52,7 @@
                                     <?php endif; ?>
 
                                     <button type="submit" class="btn btn-primary btn-user btn-block">
-                                        <?php lang('Auth.loginAction') ?> Login
+                                        <?php lang('Auth.loginAction') ?> Masuk Aplikasi
                                     </button>
 
                                 </form>

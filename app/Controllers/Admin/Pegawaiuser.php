@@ -32,7 +32,7 @@ class Pegawaiuser extends BaseController
         and p.id_instansi = '0'
         ")->getResultArray();
 
-     
+
 
         $pegawai = $db->query("SELECT * FROM v_pegawai where id_instansi ='0' and id_pegawai not in (SELECT id_pegawai from t_user_pegawai)")->getResultArray();
 
@@ -46,6 +46,35 @@ class Pegawaiuser extends BaseController
 
         return view('private/manuser/userpegawail', $data);
     }
+
+
+    public function addPegawaiUserl()
+    {
+        $user = $this->request->getPost('user');
+        $pegawai = $this->request->getPost('pegawai');
+        $wilayah = $this->request->getPost('wilayah');
+
+        $M_userpegawai = new M_userpegawai();
+        $data = [
+            'id_user' => $user,
+            'id_pegawai' => $pegawai,
+            'id_wilayah' => $wilayah
+        ];
+
+        $M_userpegawai->insert($data);
+        return redirect()->to('pegawaiuserl');
+    }
+
+    public function removePegawaiUserl($id)
+    {
+        $M_userpegawai = new M_userpegawai();
+        $M_userpegawai->delete($id);
+
+        return redirect()->to('pegawaiuserl');
+    }
+
+
+
 
 
 
@@ -105,22 +134,6 @@ class Pegawaiuser extends BaseController
     }
 
 
-    public function addPegawaiUserl()
-    {
-        $user = $this->request->getPost('user');
-        $pegawai = $this->request->getPost('pegawai');
-        $wilayah = $this->request->getPost('wilayah');
-
-        $M_userpegawai = new M_userpegawai();
-        $data = [
-            'id_user' => $user,
-            'id_pegawai' => $pegawai,
-            'id_wilayah' => $wilayah
-        ];
-
-        $M_userpegawai->insert($data);
-        return redirect()->to('pegawaiuserl');
-    }
 
     public function removePegawaiUserp($id)
     {
@@ -128,13 +141,5 @@ class Pegawaiuser extends BaseController
         $M_userpegawai->delete($id);
 
         return redirect()->to('pegawaiuserp');
-    }
-
-    public function removePegawaiUserl($id)
-    {
-        $M_userpegawai = new M_userpegawai();
-        $M_userpegawai->delete($id);
-
-        return redirect()->to('pegawaiuserl');
     }
 }
