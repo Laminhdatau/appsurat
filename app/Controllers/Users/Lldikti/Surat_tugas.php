@@ -28,6 +28,7 @@ use Dompdf\Dompdf;
 use App\Controllers\BaseController;
 use App\Models\M_surat;
 use App\Models\M_verifikasi;
+use PhpParser\Node\Stmt\Else_;
 
 class Surat_tugas extends BaseController
 {
@@ -43,19 +44,26 @@ class Surat_tugas extends BaseController
         $kodeSurat = $m_reff->findAll();
         $idUser = idUser();
         $idPegawai = idPegawai();
-        $verifikator = verifikator();
+
+        if (!empty(verifikator())) {
+            $verified = verifikator()->verifikator;
+        } else {
+            $verified = null;
+        }
+
+        $verifiedarray = explode(',', $verified);
 
 
-        $active = ''; // Inisialisasi variabel $active dengan string kosong
+        $active = '';
 
         if ($idUser == '16') {
             $active = "WHERE st.is_active='1'";
-        } elseif (!is_null($verifikator) && $verifikator->verifikator) {
-            $active = "WHERE FIND_IN_SET('" . $idPegawai . "', st.verifikator)";
-        } elseif ($idUser) {
-            $active = "WHERE st.created_by='" . idUser() . "'";
         }
 
+
+        if (in_array(idPegawai(), $verifiedarray)) {
+            $active = "WHERE FIND_IN_SET('" . $idPegawai . "', st.verifikator) or created_by='" . idUser() . "'";
+        }
 
 
         $querySurgas = $m_surgas->query("SELECT
@@ -63,6 +71,7 @@ class Surat_tugas extends BaseController
         j.jenis_surat,
         n.nomor_surat,
         n.perihal,
+        
         GROUP_CONCAT(DISTINCT p.id_pegawai) AS ids_pegawai,
         GROUP_CONCAT(DISTINCT p.nama_lengkap SEPARATOR '<br> ') AS nama_pegawai,
         IF(COUNT(DISTINCT v.id_status) = 1, MAX(v.id_status), GROUP_CONCAT(DISTINCT v.id_status 
@@ -70,12 +79,12 @@ class Surat_tugas extends BaseController
         FROM
         t_surat_tugas st
         LEFT JOIN t_surat_tugas_pegawai tp ON tp.id_surat_tugas = st.id_surat_tugas
-        LEFT JOIN db_pegawai.t_pegawai p ON FIND_IN_SET(p.id_pegawai, tp.id_pegawai_string) > 0
+        LEFT JOIN t_pegawai p ON FIND_IN_SET(p.id_pegawai, tp.id_pegawai_string) > 0
         JOIN t_jenis_surat j ON j.id_jenis_surat = st.id_jenis_surat
         LEFT JOIN t_reff_surat n ON n.nomor_surat = SUBSTRING_INDEX(SUBSTRING_INDEX(st.id_nomor_surat, '/', -2), '/', 1)
         LEFT JOIN t_verifikasi v on v.id_surat=st.id_surat_tugas
         LEFT JOIN t_status s on s.id_status=v.id_status
-        " . $active . "
+       " . $active . "
     GROUP BY
         st.id_surat_tugas, n.id_reff_surat, v.id_surat
     order by create_at desc
@@ -86,7 +95,10 @@ class Surat_tugas extends BaseController
 
         $surgas = $querySurgas->getResultArray();
         $pegawai = $m_pegawai->where('id_pegawai !=', 0)->findAll();
-        $pegawaiverify = $m_pegawai->where('id_pegawai in(select id_pegawai from db_persuratan.t_user_pegawai)')->findAll();
+
+        $pegawaiverify = $m_pegawai->where('id_pegawai in(select id_pegawai from t_user_pegawai)')
+            ->where('id_pegawai != "' . idPegawai() . '"')
+            ->where('id_pegawai != "761c7ed7-2966-11ee-b728-503eaa456e2a"')->findAll();
 
 
         $data = [
@@ -378,11 +390,11 @@ class Surat_tugas extends BaseController
     FROM
         t_surat_tugas st
     LEFT JOIN
-        db_pegawai.t_pegawai p ON p.id_pegawai = st.id_penandatangan
+        t_pegawai p ON p.id_pegawai = st.id_penandatangan
     LEFT JOIN
         t_surat_tugas_pegawai tp ON tp.id_surat_tugas = st.id_surat_tugas
     LEFT JOIN 
-        db_pegawai.t_pegawai ps ON FIND_IN_SET(ps.id_pegawai, tp.id_pegawai_string) > 0
+        t_pegawai ps ON FIND_IN_SET(ps.id_pegawai, tp.id_pegawai_string) > 0
        WHERE
         st.id_surat_tugas IN ('" . $segment2 . "')
     GROUP BY
@@ -453,7 +465,7 @@ class Surat_tugas extends BaseController
     FROM
         t_surat_tugas st
         LEFT JOIN t_surat_tugas_pegawai tp ON tp.id_surat_tugas = st.id_surat_tugas
-        LEFT JOIN db_pegawai.t_pegawai p ON FIND_IN_SET(p.id_pegawai, tp.id_pegawai_string) > 0
+        LEFT JOIN t_pegawai p ON FIND_IN_SET(p.id_pegawai, tp.id_pegawai_string) > 0
         JOIN t_jenis_surat j ON j.id_jenis_surat = st.id_jenis_surat
         LEFT JOIN t_reff_surat n ON n.nomor_surat = SUBSTRING_INDEX(SUBSTRING_INDEX(st.id_nomor_surat, '/', -2), '/', 1)
         where st.id_surat_tugas = '" . $id . "'
@@ -467,7 +479,7 @@ class Surat_tugas extends BaseController
     st.id_surat_tugas,st.id_penandatangan,p.nama_lengkap as nama_penanda,p.nip as np
 FROM
     t_surat_tugas st
-    LEFT JOIN db_pegawai.t_pegawai p ON p.id_pegawai=st.id_penandatangan
+    LEFT JOIN t_pegawai p ON p.id_pegawai=st.id_penandatangan
     where st.id_surat_tugas = '" . $id . "'");
 
         $surgas = $querySurgas->getRow();

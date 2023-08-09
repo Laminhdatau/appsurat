@@ -6,10 +6,10 @@ use CodeIgniter\Model;
 
 class M_pegawai extends Model
 {
-    protected $DBGroup = 'secondary'; 
+    // protected $DBGroup = 'secondary'; 
     protected $table = 't_pegawai';
     protected $primaryKey = 'id_pegawai';
-    protected $allowedFields = ['nama_lengkap', 'foto', 'nip', 'golongan', 'jabatan', 'unit_kerja', 'tanggal_lahir', 'jenis_kelamin', 'pendidikan_terakhir', 'alamat'];
+    protected $allowedFields = ['nama_lengkap', 'nip', 'golongan', 'jabatan', 'unit_kerja', 'tanggal_lahir', 'jenis_kelamin', 'pendidikan_terakhir', 'alamat'];
 
     public function getPegawaiById($idPegawai)
     {

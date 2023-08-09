@@ -8,11 +8,22 @@ class M_user extends Model
 {
     protected $table = 'users';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'username', 'email', 'active'];
+    protected $allowedFields = ['id', 'username', 'user_image', 'password_hash', 'email', 'active'];
 
-    public function getUsers()
+
+    public function getUsers($id = null)
     {
-        return $this->findAll();
+        $this->select('*')
+            ->from('v_ulevel u')
+            ->join('t_user_pegawai up', 'up.id_user = u.id_user')
+            ->join('v_pegawai p', 'p.id_pegawai = up.id_pegawai');
+
+        if ($id === null) {
+            return $this->findAll();
+        } else {
+            $this->where('u.id_user', $id);
+            return $this->first();
+        }
     }
 
     public function getUserById($id)
@@ -29,7 +40,6 @@ class M_user extends Model
     {
         return $this->update($id, $data);
     }
-
     public function deleteUser($id)
     {
         return $this->delete($id);

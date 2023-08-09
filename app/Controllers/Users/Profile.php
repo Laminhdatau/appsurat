@@ -3,90 +3,100 @@
 namespace App\Controllers\Users;
 
 use App\Controllers\BaseController;
+use App\Models\M_pegawai;
+use App\Models\M_user;
+use Myth\Auth\Models\UserModel;
+use Myth\Auth\Controllers\AuthController;
+use Myth\Auth\Password;
 
 class Profile extends BaseController
 {
 
+    protected $helpers = ['form', 'url'];
+    protected $userModel;
 
     public function index()
     {
-
-        $db = db_connect();
-        $query = $db->query("SELECT * from v_ulevel u
-        ,t_user_pegawai up 
-        ,v_pegawai p
-        where up.id_user=u.id_user
-        and p.id_pegawai=up.id_pegawai
-        and u.id_user='" . idUser() . "'
-        ");
-        $users = $query->getRow();
+        $m_user = new M_user();
+        $users = $m_user->getUsers(idUser());
         $data = [
             'title' => 'Profile',
             'users' => $users
         ];
-
-
-        // dd($data);
-
         return view('public/profile', $data);
     }
 
-    // public function create()
-    // {
-    //     $pw = $this->request->getPost('password');
-    //     $pwhash = password_hash("$pw", PASSWORD_DEFAULT);
+    public function ubahProfile($id, $idp)
+    {
+        $M_user = new M_user();
+        $M_pegawai = new M_pegawai();
 
-    //     $data = [
-    //         'id' => $this->request->getPost('id_user'),
-    //         'username' => $this->request->getPost('username'),
-    //         'email' => $this->request->getPost('email'),
-    //         'password_hash' => $pwhash,
-    //         'active' => 1
-    //     ];
 
-    //     // dd($data);
-    //     $M_user->createUser($data);
+        $du = [
+            'email' => $this->request->getVar('email'),
+            'username' => $this->request->getVar('username')
+        ];
 
-    //     return redirect()->to(base_url('pengguna'))->with('success', 'User created successfully.');
-    // }
+        $user_image = $this->request->getFile('user_image');
 
-    // public function edit($id)
-    // {
-    //     $M_user = new M_user();
-    //     $user = $M_user->getUserById($id);
+        if ($user_image && $user_image->isValid() && !$user_image->hasMoved()) {
+            // Pindahkan file ke direktori yang diinginkan, misalnya folder 'assets/img'
+            $newName = $user_image->getRandomName();
+            $user_image->move('assets/img', $newName);
+            $du['user_image'] = $newName;
+        }
 
-    //     if (!$user) {
-    //         return redirect()->back()->with('error', 'User not found.');
-    //     }
+        $M_user->updateUser($id, $du);
 
-    //     $data = [
-    //         'title' => 'Edit User',
-    //         'user' => $user
-    //     ];
+        $dp = [
+            'nama_lengkap' => $this->request->getVar('nama_lengkap')
+        ];
 
-    //     return view('admin/user/edit', $data);
-    // }
+        $M_pegawai->updatePegawai($idp, $dp);
 
-    // public function update($id)
-    // {
-    //     $M_user = new M_user();
+        return redirect()->to(base_url('profile'))->with('success', 'Data berhasil disimpan.');
+    }
 
-    //     $data = [
-    //         'username' => $this->request->getPost('username'),
-    //         'email' => $this->request->getPost('email'),
-    //         'password' => $this->request->getPost('password')
-    //     ];
 
-    //     $M_user->updateUser($id, $data);
 
-    //     return redirect()->to(base_url('admin/user'))->with('success', 'User updated successfully.');
-    // }
 
-    // public function delete($id)
-    // {
-    //     $M_user = new M_user();
-    //     $M_user->deleteUser($id);
 
-    //     return redirect()->to(base_url('admin/user'))->with('success', 'User deleted successfully.');
-    // }
+
+
+    public function formPassword()
+    {
+       
+        $data = [
+            'title' => 'Ubah Password'
+            
+        ];
+        return view('public/pwd', $data);
+    }
+
+
+    public function changePassword()
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find(user_id());
+
+        $rules = [
+            'old_password' => 'required',
+            'new_password' => 'required|min_length[8]|strong_password',
+            'confirm_password' => 'required|matches[new_password]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->to('change-password')->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $oldPassword = $this->request->getPost('old_password');
+        if (!$userModel->verifyPassword($user->email, $oldPassword)) {
+            return redirect()->to('change-password')->withInput()->with('errors', ['old_password' => 'Old password is incorrect.']);
+        }
+
+        $newPassword = $this->request->getPost('new_password');
+        $userModel->update($user->id, ['password' => $newPassword]);
+
+        return redirect()->to('profile')->with('message', 'Password changed successfully.');
+    }
 }

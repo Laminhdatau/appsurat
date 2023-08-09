@@ -247,47 +247,31 @@
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-                    <?php $verifikator = verifikator();
-                    if ($verifikator) {
-                        $url = base_url('surattugas/');
-                        $jumlah = $verifikator->jum_surat;
-                    } else {
-                        $url = '#';
-                        $jumlah = null;
-                    }
-                    ?>
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
                         <div class="topbar-divider d-none d-sm-block"></div>
-                        <li class="nav-item dropdown no-arrow">
+                        <!-- <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="far fa-bell"></i>
-                                <span class="badge badge-danger navbar-badge"><?= $jumlah; ?></span>
+                                <span class="badge badge-danger navbar-badge"><= $jumlah; ?></span>
                             </a>
-                            <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
 
 
                                 <span class="dropdown-item dropdown-header">2 Pemberitahuan</span>
-                                <!-- <div class="dropdown-divider"></div> -->
-                                <!-- <a href="<= $url; ?>" class="dropdown-item">
-                                    <i class="fas fa-envelope mr-2"></i> 1 Surat Masuk
-                                    <span class="float-right text-muted text-sm">3 mins</span>
-                                </a> -->
+                              
 
-                                <?php if ($jumlah != null) { ?>
                                     <div class="dropdown-divider"></div>
                                     <a href="" class="dropdown-item">
-                                        <i class="fas fa-users mr-2"></i> <?= $jumlah; ?> Meminta Verifikasi SPT
+                                        <i class="fas fa-users mr-2"></i> < $jumlah; ?> Meminta Verifikasi SPT
                                         <span class="float-right text-muted text-sm">12 hours</span>
                                     </a>
-                                <?php } ?>
                                 <div class="dropdown-divider"></div>
                                 <a href="#" class="dropdown-item dropdown-footer">Lihat Semua</a>
                             </div>
-                        </li>
+                        </li> -->
 
 
                         <li class="nav-item dropdown no-arrow">
@@ -307,13 +291,18 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
 
-                                    <a class="dropdown-item" href="<?= base_url('profile'); ?>">
+                                <?php if (logged_in()) : ?>
+                                    <a class="dropdown-item" href="<?= base_url('profile/' . idUser()); ?>">
                                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Profile
                                     </a>
 
-                                <div class="dropdown-divider"></div>
-                                <?php if (logged_in()) : ?>
+                                    <a class="dropdown-item" href="<?= base_url('formpwd/' . idUser()); ?>">
+                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Ubah Password
+                                    </a>
+
+                                    <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                         <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Logout

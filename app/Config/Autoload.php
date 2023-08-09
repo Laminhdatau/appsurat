@@ -64,7 +64,7 @@ class Autoload extends AutoloadConfig
      * @var array<string, string>
      */
     public $classmap = [
-        'M_user' => APPPATH . 'Models/M_user.php', 
+        'M_user' => APPPATH . 'Models/M_user.php',
         'M_verifikasi' => APPPATH . 'Models/M_verifikasi.php',
         'M_pegawai' => APPPATH . 'Models/M_pegawai.php',
         'M_pegawai_pts' => APPPATH . 'Models/M_pegawai_pts.php',
@@ -109,5 +109,5 @@ class Autoload extends AutoloadConfig
      * @var string[]
      * @phpstan-var list<string>
      */
-    public $helpers = ['form'];
+    public $helpers = ['form', 'form-validation'];
 }

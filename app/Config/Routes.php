@@ -148,9 +148,10 @@ $routes->get('notadinas', 'Users\\Lldikti\\Nota_dinas::index', ['filter' => 'per
 // END ADMDIKTI 
 // ===============================================================================================================
 
-
-
-$routes->get('profile', 'Users\\Profile::index');
+$routes->get('profile/(:num)', 'Users\\Profile::index/$1');
+$routes->post('changeProfile/(:num)/(:any)', 'Users\\Profile::ubahProfile/$1/$2');
+$routes->get('formpwd/(:any)', 'Users\\Profile::formPassword/$1');
+$routes->post('changepwd/(:num)', 'Users\\Profile::ubahpassword/$1');
 
 $routes->post('getCurStep/(:any)', 'Users\\Pts\\Surat_keluarp::getCurStep/$1');
 $routes->get('notif', 'Users\\Pts\\Surat_masukp::get_notifikasi');

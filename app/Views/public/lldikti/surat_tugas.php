@@ -38,39 +38,96 @@
                         foreach ($surgas as $s) { ?>
                             <?php $status = $s['id_status'];
                             $starray = explode(',', $status);
+
+
+                            $verifikator = $s['verifikator'];
+                            $verray = explode(',', $verifikator);
+                            $jumlahverif = count($verray);
+
+                            $tverif = verifikasisetuju();
+                            if (!empty($tverif && $tverif->id_surat == $s['id_surat_tugas'])) {
+                                $limit = verifikasisetuju()->jumlah_verifikator;
+                                $ada = verifikasisetuju()->id_user;
+                            } else {
+                                $limit = null;
+                                $ada = null;
+                            }
+
+                            // d($tverif);
+                            // d($limit);
+                            // dd($jumlahverif);
+
+                            $idArray = explode(',', $ada);
+
+
+
+
+                            if (in_array('1', $starray)) {
+                                $status = '1';
+                            } elseif (in_array('2', $starray)) {
+                                $status = '2';
+                            } elseif (in_array('3', $starray)) {
+                                $status = '3';
+                            } else {
+                                if ($limit == null) {
+                                    $status = 'process'; // Set status in_process jika limit masih null
+                                } elseif ($limit < $jumlahverif) {
+                                    $status = 'in_process'; // Set status in_process jika limit kurang dari jumlah verifikator
+                                } else {
+                                    $status = 'verified';
+                                }
+                            }
+
+                            switch ($status) {
+                                case '1':
+                                    $class = 'success';
+                                    $icon = 'check';
+                                    $ket = 'Tertanda';
+                                    break;
+                                case '2':
+                                    $class = 'warning';
+                                    $icon = 'clock';
+                                    $ket = 'Perlu Direvisi';
+                                    break;
+                                case '3':
+                                    $class = 'danger';
+                                    $icon = 'times';
+                                    $ket = 'Tertolak';
+                                    break;
+
+                                case 'in_process':
+                                    $class = 'info';
+                                    $icon = 'clock';
+                                    $ket = 'Proses Verifikasi';
+                                    break;
+                                case 'verified':
+                                    $class = 'success';
+                                    $icon = 'check';
+                                    $ket = 'Terverifikasi';
+                                    break;
+                                case 'process':
+                                    $class = 'warning';
+                                    $icon = 'refresh';
+                                    $ket = 'Proses';
+                                    break;
+                                default:
+                                    $class = 'warning';
+                                    $icon = 'refresh';
+                                    $ket = 'Proses';
+                                    break;
+                            }
                             ?>
+
+
+
+
                             <tr>
                                 <td class="col-4">
-                                    <?php if (in_array('1', $starray)) {
-                                        $class = 'success';
-                                        $icon = 'check';
-                                        $ket = 'Tertanda';
-                                    } elseif (in_array('2', $starray)) {
-                                        $class = 'warning';
-                                        $icon = 'clock';
-                                        $ket = 'Perlu Direvisi';
-                                    } elseif (in_array('3', $starray)) {
-                                        $class = 'danger';
-                                        $icon = 'times';
-                                        $ket = 'Tertolak';
-                                    } elseif (in_array('12', $starray)) {
-                                        $class = 'info';
-                                        $icon = 'check';
-                                        $ket = 'Terverifikasi';
-                                    } elseif (!empty($s['verifikator'])) {
-                                        $class = 'warning';
-                                        $icon = 'clock';
-                                        $ket = 'Menunggu Verifikasi';
-                                    } else {
-                                        $class = 'warning';
-                                        $icon = 'clock';
-                                        $ket = 'Tidak Lengkap';
-                                    } ?>
-
 
                                     <p class="text-<?= $class; ?>"><?= $s['id_nomor_surat']; ?> <i class="fas fa-<?= $icon; ?>"></i><?= $ket; ?></p>
 
-                                    <p><?php
+                                    <p>
+                                        <?php
                                         $peri = $s['perihal'];
                                         $words = explode(' ', $peri);
                                         $max_words = 3;
@@ -90,12 +147,21 @@
                                     $explodedDasar = explode(',', $dasar);
                                     if (count($explodedDasar) > 1) {
                                         foreach ($explodedDasar as $item) {
-                                            echo '<li>' . $item . '</li>';
+                                            $words = explode(' ', $item);
+
+                                            $shortenedItem = implode(' ', array_slice($words, 0, 4));
+
+                                            echo '<li>' . $shortenedItem . '</li>';
                                         }
                                     } else {
-                                        echo $dasar;
+                                        $words = explode(' ', $dasar);
+
+                                        $shortenedDasar = implode(' ', array_slice($words, 0, 4));
+
+                                        echo $shortenedDasar;
                                     }
                                     ?>
+
                                     <?php if (empty($s['verifikator'])) : ?>
                                         <form class="saveDasar" data-id="<?= $s['id_surat_tugas']; ?>">
                                             <div>
@@ -123,21 +189,16 @@
                                         <?php if (empty($s['qr_code_image_path'])) { ?>
                                             <?php if (!empty($s['nama_pegawai'])) { ?>
                                                 <?php
-                                                // $status=$s['id_status'];
-
-                                                if (!in_array("12", $starray)) { ?>
-                                                    <?php
+                                                if ($status != 'verified') {
                                                     $veri = verifikator();
-                                                    if ($veri) {
-                                                        $verify = $veri->verifikator;
-                                                    } else {
-                                                        $verify = null;
+                                                    $verify = ($veri) ? $veri->verifikator : null;
+
+                                                    if ($verify !== idPegawai()) {
+                                                        echo '<button class="badge badge-secondary" data-toggle="modal" data-target="#updatePegawaiSpt' . $s['id_surat_tugas'] . '"><i class="fas fa-edit"></i> Update Penerima SPT</button>';
                                                     }
-                                                    if ($verify !== idPegawai()) { ?>
-                                                        <button class="badge badge-secondary" data-toggle="modal" data-target="#updatePegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-edit"></i> Update Penerima SPT</button>
-                                                    <?php } else { ?>
-                                                    <?php } ?>
-                                                <?php } ?>
+                                                }
+                                                ?>
+
 
                                             <?php } else { ?>
                                                 <button class="badge badge-primary" data-toggle="modal" data-target="#tambahPegawaiSpt<?= $s['id_surat_tugas']; ?>"><i class="fas fa-plus"></i> Tambah Penerima SPT</button>
@@ -158,19 +219,30 @@
                                     echo $short_text;
                                     ?>
                                 </td>
+
                                 <td>
                                     <?= $s['tempat_pelaksanaan']; ?>
                                 </td>
 
                                 <td>
-                                    <?php if (in_array("1", $starray)) { ?>
+                                    <?php if ($status == '1') { ?>
                                         <img src="<?= base_url($s['qr_code_image_path']); ?>" alt="">
+                                    <?php } elseif ($status == 'in_process') { ?>
+                                        <div style="display: flex; align-items: center;">
+                                            <a>Proses Verifikasi</a>
+                                        </div>
+                                    <?php } elseif ($status == 'verified') { ?>
+                                        <div style="display: flex; align-items: center;">
+                                            <a>Menunggu Persetujuan</a>
+                                        </div>
+                                        <?php } elseif ($status == '3') { ?>
+                                        <div style="display: flex; align-items: center;">
+                                            <a>Surat Di Tolak</a>
+                                        </div>
                                     <?php } else { ?>
-                                        <?php if (empty($s['verifikator'])) { ?>
-                                            <div style="display: flex; align-items: center;">
-                                                <a>Belum Di Tandatangani</a>
-                                            </div>
-                                        <?php } ?>
+                                        <div style="display: flex; align-items: center;">
+                                            <a>Belum Terverifikasi</a>
+                                        </div>
                                     <?php } ?>
                                 </td>
 
@@ -183,13 +255,10 @@
                                     <?php if (idUser() !== '16') { ?>
                                         <?php if (empty($s['qr_code_image_path'])) { ?>
                                             <?php
-                                            $status = $s['id_status'];
-                                            $sttsArray = explode(",", $status);
 
-                                            if (!in_array("1", $sttsArray)) { ?>
 
+                                            if ($status != '1' && $status != 'verified' && $status != '3' && $s['created_by'] == idUser()) { ?>
                                                 <button class="badge badge-primary" data-toggle="modal" data-target="#updateModal<?= $s['id_surat_tugas']; ?>"><i class="fas fa-edit"></i> Ubah Data</button><br>
-
                                             <?php } ?>
 
                                         <?php } ?>
@@ -214,28 +283,46 @@
                                         ?>
 
                                             <?php if (idUser() == '16') { ?>
-                                                <?php if (empty($s['qr_code_image_path']) && !empty($s['verifikator'])) : ?>
+
+                                                <?php if (empty($s['qr_code_image_path']) && $status == 'verified') : ?>
                                                     <button class="badge badge-primary" data-toggle="modal" data-target="#tandaTangan<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Tanda Tangan</button>
                                                 <?php endif; ?>
-
-                                            <?php } else { ?>
-                                                <?php if (empty($s['qr_code_image_path'])) { ?>
-                                                    <?php if (verifikasisetuju()) { ?>
-                                                        <button class="badge badge-primary" data-toggle="modal" data-target="#verifikasi<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Verifikasi</button>
-                                                    <?php } ?>
-                                                <?php } ?>
-
                                             <?php } ?>
                                         <?php } ?>
-                                    <?php } ?>
+
+                                        <!-- <php if (in_array(idPegawai(), $verray)) { ?> -->
 
 
-                                    <?php if (idUser() !== '16') { ?>
-                                        <?php if (empty($s['verifikator'])) { ?>
+                                        <?php if (
+
+                                            !in_array(
+                                                idUser(),
+                                                $idArray
+                                            ) &&
+                                            in_array(idPegawai(), $verray) &&
+                                            $status != '3' && $status != '2'
+                                        ) { ?>
+                                            <button class="badge badge-primary" data-toggle="modal" data-target="#verifikasi<?= $s['id_surat_tugas']; ?>"><i class="fas fa-book"></i> Verifikasi</button>
+                                        <?php } ?>
+
+
+
+                                        <?php if (
+                                            !empty($s['nama_pegawai']) &&
+                                            !empty($s['tgl_mulai']) &&
+                                            !empty($s['tgl_selesai']) &&
+                                            !empty($s['tujuan_surat']) &&
+                                            !empty($s['tempat_pelaksanaan']) &&
+                                            !empty($s['dasar']) &&
+                                            empty($s['qr_code_image_path']) &&
+                                            empty($s['verifikator'])
+                                        ) { ?>
                                             <button class="badge badge-primary" data-toggle="modal" data-target="#addverifikator<?= $s['id_surat_tugas']; ?>"><i class="fas fa-plus"></i> Tambah Verifikator</button>
                                         <?php } ?>
-                                    <?php } ?>
 
+
+
+                                    <?php } ?>
                                 </td>
                             </tr>
                         <?php } ?>

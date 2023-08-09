@@ -5,6 +5,9 @@ namespace App\Controllers\Admin;
 use App\Models\M_user;
 use App\Controllers\BaseController;
 
+use Myth\Auth\Models\UserModel;
+use Myth\Auth\Password;
+
 class User extends BaseController
 {
     public function index()
@@ -18,19 +21,19 @@ class User extends BaseController
         return view('private/manuser/users', $data);
     }
 
-    // public function create()
-    // {
-    //     $M_user = new M_user();
+    public function create()
+    {
+        $M_user = new UserModel();
 
-    //     $data = [
-    //         'id' => $this->request->getPost('id_user'),
-    //         'user' => $this->request->getPost('user')
-    //     ];
+        $M_user->withGroup($this->request->getVar('role'))->save([
+            'email' => $this->request->getVar('email'),
+            'username' => $this->request->getVar('username'),
+            'password_hash' => Password::hash('123456'),
+            'active' => '1'
+        ]);
 
-    //     $M_user->insert($data);
-
-    //     return redirect()->to(base_url('people'))->with('success', 'Data berhasil disimpan.');
-    // }
+        return redirect()->to(base_url('people'))->with('success', 'Data berhasil disimpan.');
+    }
 
     public function update($id)
     {

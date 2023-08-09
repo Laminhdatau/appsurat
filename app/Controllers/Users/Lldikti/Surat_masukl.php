@@ -67,7 +67,7 @@ class Surat_masukl extends BaseController
         FROM db_persuratan.t_disposisi s
         LEFT JOIN db_persuratan.t_surat ll ON ll.id_surat = s.id_surat_dispos
         JOIN db_persuratan.t_jenis_surat j ON j.id_jenis_surat = s.id_jenis_surat
-        JOIN db_pegawai.t_pegawai p ON FIND_IN_SET(p.id_pegawai, s.id_pegawai_tujuan) > 0
+        JOIN t_pegawai p ON FIND_IN_SET(p.id_pegawai, s.id_pegawai_tujuan) > 0
         WHERE j.id_jenis_surat = 3
         GROUP BY s.id_surat_dispos,s.tanggal_disposisi
         ORDER BY s.id_surat_dispos;");
@@ -156,7 +156,7 @@ class Surat_masukl extends BaseController
         FROM db_persuratan.t_disposisi s
         LEFT JOIN db_persuratan.t_surat ll ON ll.id_surat = s.id_surat_dispos
         JOIN db_persuratan.t_jenis_surat j ON j.id_jenis_surat = s.id_jenis_surat
-        JOIN db_pegawai.t_pegawai p ON FIND_IN_SET(p.id_pegawai, s.id_pegawai_tujuan) > 0
+        JOIN t_pegawai p ON FIND_IN_SET(p.id_pegawai, s.id_pegawai_tujuan) > 0
         WHERE j.id_jenis_surat = 3
         GROUP BY s.id_surat_dispos,s.tanggal_disposisi
         ORDER BY s.id_surat_dispos;");

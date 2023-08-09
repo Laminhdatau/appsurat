@@ -150,15 +150,14 @@ if (!function_exists('t_verifikasi')) {
     }
 }
 
+
 if (!function_exists('verifikasisetuju')) {
     function verifikasisetuju()
     {
         $db = db_connect();
-        $idu=idUser();
-        $data = $db->query("SELECT id_surat, COUNT(DISTINCT id_user) AS id_user
+        $data = $db->query("SELECT id_surat, COUNT(DISTINCT id_user) AS jumlah_verifikator,group_concat(distinct id_user SEPARATOR ',') AS id_user
         FROM t_verifikasi
         WHERE id_status = '12'
-        and id_user='".$idu."'
         GROUP BY id_surat;")->getRow();
         if ($data) {
             return $data;
@@ -166,6 +165,7 @@ if (!function_exists('verifikasisetuju')) {
         return null;
     }
 }
+
 
 if (!function_exists('uprov')) {
     function uprov()
