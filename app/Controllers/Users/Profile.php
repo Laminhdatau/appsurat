@@ -12,13 +12,14 @@ use Myth\Auth\Password;
 class Profile extends BaseController
 {
 
-    protected $helpers = ['form', 'url'];
-    protected $userModel;
 
     public function index()
     {
         $m_user = new M_user();
-        $users = $m_user->getUsers(idUser());
+        $uri = $this->request->uri->getSegment(2); 
+        
+        $users = $m_user->getUsers($uri); // Menghapus ->getRow() untuk mendapatkan semua hasil
+ 
         $data = [
             'title' => 'Profile',
             'users' => $users
@@ -40,7 +41,6 @@ class Profile extends BaseController
         $user_image = $this->request->getFile('user_image');
 
         if ($user_image && $user_image->isValid() && !$user_image->hasMoved()) {
-            // Pindahkan file ke direktori yang diinginkan, misalnya folder 'assets/img'
             $newName = $user_image->getRandomName();
             $user_image->move('assets/img', $newName);
             $du['user_image'] = $newName;
@@ -54,7 +54,7 @@ class Profile extends BaseController
 
         $M_pegawai->updatePegawai($idp, $dp);
 
-        return redirect()->to(base_url('profile'))->with('success', 'Data berhasil disimpan.');
+        return redirect()->to(base_url(''))->with('success', 'Data berhasil disimpan.');
     }
 
 
@@ -65,10 +65,10 @@ class Profile extends BaseController
 
     public function formPassword()
     {
-       
+
         $data = [
             'title' => 'Ubah Password'
-            
+
         ];
         return view('public/pwd', $data);
     }

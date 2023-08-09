@@ -10,21 +10,17 @@ class M_user extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = ['id', 'username', 'user_image', 'password_hash', 'email', 'active'];
 
-
-    public function getUsers($id = null)
+    public function getUsers($id)
     {
-        $this->select('*')
+        $query = $this->select('*')
             ->from('v_ulevel u')
             ->join('t_user_pegawai up', 'up.id_user = u.id_user')
-            ->join('v_pegawai p', 'p.id_pegawai = up.id_pegawai');
-
-        if ($id === null) {
-            return $this->findAll();
-        } else {
-            $this->where('u.id_user', $id);
-            return $this->first();
-        }
+            ->join('v_pegawai p', 'p.id_pegawai = up.id_pegawai')
+            ->where('u.id_user', $id);
+        
+        return $query->get()->getRow(); // Menggunakan get() untuk menjalankan query dan getResult() untuk mengambil hasil
     }
+    
 
     public function getUserById($id)
     {
