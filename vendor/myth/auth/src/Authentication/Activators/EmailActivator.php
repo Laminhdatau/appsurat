@@ -20,6 +20,13 @@ class EmailActivator extends BaseActivator implements ActivatorInterface
     public function send(?User $user = null): bool
     {
         $email  = service('email');
+
+        // parent::send($user);
+
+
+        // $activator = service('activator');
+        // $activator->send($user);
+
         $config = new Email();
 
         $settings = $this->getActivatorSettings();
@@ -31,7 +38,7 @@ class EmailActivator extends BaseActivator implements ActivatorInterface
             ->setMailType('html')
             ->send();
 
-        if (! $sent) {
+        if (!$sent) {
             $this->error = lang('Auth.errorSendingActivation', [$user->email]);
 
             return false;

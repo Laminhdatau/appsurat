@@ -188,8 +188,9 @@ class Auth extends BaseConfig
      *
      * @var string|null Name of the ActivatorInterface class
      */
-    // public $requireActivation = 'Myth\Auth\Authentication\Activators\EmailActivator';
-    public $requireActivation = null;
+    public $requireActivation = 'Myth\Auth\Authentication\Activators\EmailActivator';
+  
+    // public $requireActivation = null;
 
     /**
      * --------------------------------------------------------------------
@@ -201,8 +202,8 @@ class Auth extends BaseConfig
      *
      * @var string|null Name of the ResetterInterface class
      */
-    // public $activeResetter = 'Myth\Auth\Authentication\Resetters\EmailResetter';
-    public $activeResetter = false;
+    public $activeResetter = 'Myth\Auth\Authentication\Resetters\EmailResetter';
+    // public $activeResetter = false;
 
     /**
      * --------------------------------------------------------------------
@@ -337,8 +338,6 @@ class Auth extends BaseConfig
         'Myth\Auth\Authentication\Passwords\CompositionValidator',
         'Myth\Auth\Authentication\Passwords\NothingPersonalValidator',
         'Myth\Auth\Authentication\Passwords\DictionaryValidator',
-
-        
         'Myth\Auth\Authentication\Passwords\PwnedValidator',
     ];
 
@@ -353,8 +352,8 @@ class Auth extends BaseConfig
      */
     public $userActivators = [
         'Myth\Auth\Authentication\Activators\EmailActivator' => [
-            'fromEmail' => null,
-            'fromName'  => null,
+            'fromEmail' => 'persuratan@persuratan.lldiktiwil16.id',
+            'fromName'  => 'LLDIKTI Wilayah 16'
         ],
     ];
 
@@ -369,8 +368,8 @@ class Auth extends BaseConfig
      */
     public $userResetters = [
         'Myth\Auth\Authentication\Resetters\EmailResetter' => [
-            'fromEmail' => null,
-            'fromName'  => null,
+            'fromEmail' => 'persuratan@persuratan.lldiktiwil16.id',
+            'fromName'  => 'LLDIKTI Wilayah 16',
         ],
     ];
 
