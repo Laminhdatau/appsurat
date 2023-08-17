@@ -1,0 +1,72 @@
+INFO - 2023-08-12 02:57:39 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 02:57:39 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 02:57:42 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 02:58:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 02:58:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 02:58:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 02:58:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 02:59:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2023-08-12 03:00:12 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): Unable to connect to ssl://mail.google.com:25 (Connection timed out) in /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1868): fsockopen()
+#2 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 /var/www/html/appsurat/vendor/myth/auth/src/Authentication/Activators/EmailActivator.php(39): CodeIgniter\Email\Email->send()
+#6 /var/www/html/appsurat/vendor/myth/auth/src/Controllers/AuthController.php(185): Myth\Auth\Authentication\Activators\EmailActivator->send()
+#7 /var/www/html/appsurat/vendor/codeigniter4/framework/system/CodeIgniter.php(932): Myth\Auth\Controllers\AuthController->attemptRegister()
+#8 /var/www/html/appsurat/vendor/codeigniter4/framework/system/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController()
+#9 /var/www/html/appsurat/vendor/codeigniter4/framework/system/CodeIgniter.php(366): CodeIgniter\CodeIgniter->handleRequest()
+#10 /var/www/html/appsurat/public/index.php(67): CodeIgniter\CodeIgniter->run()
+#11 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Commands/Server/rewrite.php(47): require_once('...')
+#12 {main}
+ERROR - 2023-08-12 03:00:12 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2023-08-12 03:00:12 --> 
+INFO - 2023-08-12 03:00:12 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 03:09:04 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2023-08-12 03:10:11 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): Unable to connect to ssl://smtp.google.com:25 (Connection timed out) in /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1868): fsockopen()
+#2 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 /var/www/html/appsurat/vendor/myth/auth/src/Authentication/Activators/EmailActivator.php(39): CodeIgniter\Email\Email->send()
+#6 /var/www/html/appsurat/vendor/myth/auth/src/Controllers/AuthController.php(185): Myth\Auth\Authentication\Activators\EmailActivator->send()
+#7 /var/www/html/appsurat/vendor/codeigniter4/framework/system/CodeIgniter.php(932): Myth\Auth\Controllers\AuthController->attemptRegister()
+#8 /var/www/html/appsurat/vendor/codeigniter4/framework/system/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController()
+#9 /var/www/html/appsurat/vendor/codeigniter4/framework/system/CodeIgniter.php(366): CodeIgniter\CodeIgniter->handleRequest()
+#10 /var/www/html/appsurat/public/index.php(67): CodeIgniter\CodeIgniter->run()
+#11 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Commands/Server/rewrite.php(47): require_once('...')
+#12 {main}
+ERROR - 2023-08-12 03:10:11 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2023-08-12 03:10:11 --> 
+INFO - 2023-08-12 03:10:11 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 03:51:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2023-08-12 03:52:35 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): Unable to connect to tls://smtp.google.com:465 (Connection timed out) in /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1868): fsockopen()
+#2 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Email/Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 /var/www/html/appsurat/vendor/myth/auth/src/Authentication/Activators/EmailActivator.php(39): CodeIgniter\Email\Email->send()
+#6 /var/www/html/appsurat/vendor/myth/auth/src/Controllers/AuthController.php(185): Myth\Auth\Authentication\Activators\EmailActivator->send()
+#7 /var/www/html/appsurat/vendor/codeigniter4/framework/system/CodeIgniter.php(932): Myth\Auth\Controllers\AuthController->attemptRegister()
+#8 /var/www/html/appsurat/vendor/codeigniter4/framework/system/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController()
+#9 /var/www/html/appsurat/vendor/codeigniter4/framework/system/CodeIgniter.php(366): CodeIgniter\CodeIgniter->handleRequest()
+#10 /var/www/html/appsurat/public/index.php(67): CodeIgniter\CodeIgniter->run()
+#11 /var/www/html/appsurat/vendor/codeigniter4/framework/system/Commands/Server/rewrite.php(47): require_once('...')
+#12 {main}
+ERROR - 2023-08-12 03:52:35 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2023-08-12 03:52:35 --> 
+INFO - 2023-08-12 03:52:35 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 03:59:48 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 03:59:54 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 04:15:06 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 04:15:07 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 04:15:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 04:15:38 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 04:29:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2023-08-12 04:47:38 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
